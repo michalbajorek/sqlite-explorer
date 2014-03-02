@@ -1,4 +1,4 @@
-#include "initialization.h"
+﻿#include "initialization.h"
 
 Initialization::Initialization()
 {

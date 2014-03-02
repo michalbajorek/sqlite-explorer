@@ -1,6 +1,14 @@
-#include "record.h"
+﻿#include "record.h"
 
 using namespace sqlite;
+
+void Record::initRecordFromQuery(Query &query)
+{
+    clear();
+    int columnsCount = query.getColumnsCount();
+    for(int columnIndex = 0; columnIndex < columnsCount; columnIndex++)
+        append(query.getTextValue(columnIndex));
+}
 
 RecordBuffer::RecordBuffer()
 {
@@ -36,13 +44,4 @@ void RecordBuffer::loadNextRecordFromQuery(Query &query)
 {
     Record &record = buffer[loadedCount++];
     record.initRecordFromQuery(query);
-}
-
-void Record::initRecordFromQuery(Query &query)
-{
-    clear();
-    rowId = query.getInt64Value(0);
-    int columnsCount = query.getColumnsCount();
-    for(int columnIndex = 1; columnIndex < columnsCount; columnIndex++)
-        append(query.getTextValue(columnIndex));
 }

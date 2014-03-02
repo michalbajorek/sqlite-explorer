@@ -1,4 +1,4 @@
-#include <QRegExp>
+﻿#include <QRegExp>
 
 #include <algorithm>
 
@@ -87,9 +87,7 @@ void RecordSet::checkQueryIsSelect()
 
 QString RecordSet::getMainQueryText()
 {
-    const int selectClauseLength = 7;
     QString mainQuery = queryText;
-    mainQuery.insert(selectClauseLength, " rowid, ");
     mainQuery.append(" LIMIT ");
     mainQuery.append(QString::number(RecordBuffer::getMaxCount() * bufferCount));
     mainQuery.append(" OFFSET ?");

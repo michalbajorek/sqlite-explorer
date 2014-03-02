@@ -1,4 +1,4 @@
-#ifndef RECORDSET_H
+﻿#ifndef RECORDSET_H
 #define RECORDSET_H
 
 #include <QStringList>

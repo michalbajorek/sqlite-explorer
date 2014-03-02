@@ -1,4 +1,4 @@
-#ifndef RECORD_H
+﻿#ifndef RECORD_H
 #define RECORD_H
 
 #include <QStringList>
@@ -12,15 +12,9 @@ class Record : public QStringList
 {
 public:
     Record()
-        { rowId = 0; }
-
-    int64_t getRowId()
-        { return rowId; }
+        { }
 
     void initRecordFromQuery(Query &query);
-
-private:
-    int64_t rowId;
 };
 
 class RecordBuffer
@@ -40,7 +34,7 @@ public:
         { return loadedCount; }
 
     bool containsRecord(int recordIndex)
-        { return recordIndex >= startIndex && recordIndex < loadedCount; }
+        { return recordIndex >= startIndex && recordIndex < startIndex + loadedCount; }
 
     bool isRecordJustAfterBuffer(int recordIndex)
         { return recordIndex >= startIndex + maxCount && recordIndex < startIndex + 2 * maxCount; }
@@ -49,7 +43,7 @@ public:
         { return recordIndex >= startIndex - maxCount && recordIndex < startIndex; }
 
     Record& getRecord(int recordIndex)
-        { return buffer[recordIndex]; }
+        { return buffer[recordIndex - startIndex]; }
 
     static int getMaxCount()
         { return maxCount; }
@@ -62,7 +56,7 @@ private:
     int startIndex;
     int loadedCount;
 
-    static const int maxCount = 100;
+    static const int maxCount = 500;
 };
 
 } // namespace sqlite

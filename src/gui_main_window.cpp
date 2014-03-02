@@ -22,7 +22,7 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-void progressHandler(sqlite::Database *, bool &)
+void MainWindow::onProgressHandler(sqlite::Database *, bool &)
 {
     QMessageBox::information(NULL, "ÓłóŁ", "Kupa");
 }
@@ -33,8 +33,9 @@ void MainWindow::on_pushButton_clicked()
     {
         sqlite::Database database;
 
-        database.open("exampleDatabase.sqlite");
-        database.progressHandler.set(progressHandler, 50);
+        database.open("places.sqlite");
+        database.progressHandler.addObserver(this);
+        database.progressHandler.setOperationInterval(100);
 
         sqlite::Table *table = database.getTable("sqlite_master");
 

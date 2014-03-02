@@ -1,36 +1,82 @@
-#include "database.h"
+﻿#include "database.h"
 #include "progress_handler.h"
 #include "sqlite3.h"
 
 using namespace sqlite;
 
-ProgressHandler::ProgressHandler(Database *database) : Object(database)
+
+ProgressObserver::ProgressObserver()
 {
-    this->function = NULL;
+    progressHandler = NULL;
 }
 
-void ProgressHandler::set(Function function, int operationInterval)
+ProgressObserver::~ProgressObserver()
 {
-    this->function = function;
+    if(progressHandler)
+        progressHandler->removeObserver(this);
+}
+
+ProgressHandler::ProgressHandler(Database *database) : Object(database)
+{
+    operationInterval = 10;
+}
+
+ProgressHandler::~ProgressHandler()
+{
+    removeAllObservers();
+}
+
+void ProgressHandler::addObserver(ProgressObserver *observer)
+{
+    observersSet.insert(observer);
+    observer->progressHandler = this;
+    setHandler();
+}
+
+void ProgressHandler::removeObserver(ProgressObserver *observer)
+{
+    observersSet.remove(observer);
+    observer->progressHandler = NULL;
+    if(observersSet.empty())
+        removeHandler();
+}
+
+void ProgressHandler::setOperationInterval(int operationInterval)
+{
+    this->operationInterval = operationInterval;
+    setHandler();
+}
+
+void ProgressHandler::setHandler()
+{
     sqlite3_progress_handler(database->getHandle(), operationInterval, staticProgressHandler, this);
 }
 
-void ProgressHandler::remove()
+void ProgressHandler::removeHandler()
 {
-    function = NULL;
     sqlite3_progress_handler(database->getHandle(), 0, NULL, NULL);
 }
 
 int ProgressHandler::staticProgressHandler(void *param)
 {
     ProgressHandler *progressHandler = static_cast<ProgressHandler*>(param);
-    return progressHandler->invokeFunction();
+    return progressHandler->notifyObservers();
 }
 
-bool ProgressHandler::invokeFunction()
+bool ProgressHandler::notifyObservers()
 {
     bool cancelOperation = false;
-    if(function)
-        function(database, cancelOperation);
+    foreach(ProgressObserver *observer, observersSet)
+    {
+        observer->onProgressHandler(database, cancelOperation);
+        if(cancelOperation)
+            break;
+    }
     return cancelOperation;
+}
+
+void ProgressHandler::removeAllObservers()
+{
+    foreach(ProgressObserver *observer, observersSet)
+        removeObserver(observer);
 }

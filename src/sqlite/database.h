@@ -1,4 +1,4 @@
-#ifndef DATABASE_H
+﻿#ifndef DATABASE_H
 #define DATABASE_H
 
 #include <QString>
@@ -26,6 +26,7 @@ public:
         { return handle; }
 
     void open(const QString &fileName);
+    void create(const QString &fileName);
     void close();
     void executeSimpleQuery(const QString &queryText);
     void vacuum();

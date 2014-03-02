@@ -1,4 +1,4 @@
-#include "database.h"
+﻿#include "database.h"
 #include "table.h"
 
 using namespace sqlite;
@@ -16,6 +16,12 @@ Database::~Database()
 void Database::open(const QString &fileName)
 {
     int errorCode = sqlite3_open_v2(fileName.toUtf8(), &handle, SQLITE_OPEN_READWRITE, NULL);
+    checkErrorCodeAndThrowException(errorCode);
+}
+
+void Database::create(const QString &fileName)
+{
+    int errorCode = sqlite3_open_v2(fileName.toUtf8(), &handle, SQLITE_OPEN_CREATE | SQLITE_OPEN_READWRITE, NULL);
     checkErrorCodeAndThrowException(errorCode);
 }
 

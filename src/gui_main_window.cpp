@@ -1,5 +1,6 @@
 ﻿#include <QMessageBox>
 #include <QTextCodec>
+#include <QAbstractTableModel>
 
 #include "gui_main_window.h"
 #include "ui_gui_main_window.h"
@@ -9,6 +10,49 @@
 #include "sqlite/recordset.h"
 #include "sqlite/query.h"
 #include "sqlite/table.h"
+
+class Model : public QAbstractTableModel
+{
+public:
+    Model(sqlite::RecordSet *recordSet)
+    {
+        this->recordSet = recordSet;
+    }
+
+    int rowCount(const QModelIndex &parent) const
+    {
+        return recordSet->getRecordsCount();
+    }
+    int columnCount(const QModelIndex &parent) const
+    {
+        return recordSet->getColumnsCount();
+    }
+    QVariant data(const QModelIndex &index, int role) const
+    {
+        if(role == Qt::DisplayRole)
+        {
+            sqlite::Record &record = recordSet->getRecord(index.row());
+            return record[index.column()];
+        }
+        return QVariant();
+    }
+
+    QVariant headerData(int section, Qt::Orientation orientation, int role) const
+    {
+        if(role == Qt::DisplayRole)
+        {
+            if(orientation == Qt::Horizontal)
+                return recordSet->getColumnName(section);
+            return QVariant(section + 1);
+        }
+        return QVariant();
+    }
+private:
+    sqlite::RecordSet *recordSet;
+
+};
+
+Model *model;
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -31,16 +75,14 @@ void MainWindow::on_pushButton_clicked()
 {
     try
     {
-        sqlite::Database database;
+        sqlite::Database *database = new sqlite::Database;
 
-        database.open("places.sqlite");
-        database.progressHandler.addObserver(this);
-        database.progressHandler.setOperationInterval(100);
+        database->open("places.sqlite");
 
-        sqlite::Table *table = database.getTable("sqlite_master");
+        sqlite::Table *table = database->getTable("moz_places");
 
-        QMessageBox::information(this, "Info", QString::number(table->getRecordsCount()));
-        QMessageBox::information(this, "Info", table->getRecord(0).at(1));
+        model = new Model(table);
+        ui->tableView->setModel(model);
     }
     catch(sqlite::Exception &e)
     {

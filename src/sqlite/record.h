@@ -1,6 +1,8 @@
 ﻿#ifndef RECORD_H
 #define RECORD_H
 
+#include <cassert>
+
 #include <QStringList>
 
 #include "query.h"
@@ -43,7 +45,10 @@ public:
         { return recordIndex >= startIndex - maxCount && recordIndex < startIndex; }
 
     Record& getRecord(int recordIndex)
-        { return buffer[recordIndex - startIndex]; }
+    {
+        assert(containsRecord(recordIndex));
+        return buffer[recordIndex - startIndex];
+    }
 
     static int getMaxCount()
         { return maxCount; }

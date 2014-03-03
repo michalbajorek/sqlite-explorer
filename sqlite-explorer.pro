@@ -27,7 +27,8 @@ SOURCES += src/main.cpp\
     src/sqlite/progress_handler.cpp \
     src/sqlite/tables.cpp \
     src/initialization.cpp \
-    src/application.cpp
+    src/application.cpp \
+    src/recordsetmodel.cpp
 
 HEADERS  += src/gui_main_window.h \
     src/sqlite/sqlite3.h \
@@ -41,6 +42,7 @@ HEADERS  += src/gui_main_window.h \
     src/sqlite/progress_handler.h \
     src/sqlite/tables.h \
     src/initialization.h \
-    src/application.h
+    src/application.h \
+    src/recordsetmodel.h
 
 FORMS    += forms/gui_main_window.ui

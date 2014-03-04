@@ -16,6 +16,8 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    ui->tableView->setModel(&model);
+    connect(ui->comboBox, SIGNAL(currentIndexChanged(QString)), this, SLOT(loadTable(QString)));
 }
 
 MainWindow::~MainWindow()
@@ -32,14 +34,30 @@ void MainWindow::on_pushButton_clicked()
 {
     try
     {
-        sqlite::Database *database = new sqlite::Database;
+        database.open("places.sqlite");
+        loadTablesToCombo();
+    }
+    catch(sqlite::Exception &e)
+    {
+        QMessageBox::warning(this, "Title", e.getErrorMessage());
+    }
+}
 
-        database->open("places.sqlite");
+void MainWindow::loadTablesToCombo()
+{
+    for(int i = 0; i < database.tables.getCount(); i++)
+    {
+        sqlite::Table *table = database.tables.getTable(i);
+        ui->comboBox->addItem(table->getName());
+    }
+}
 
-        sqlite::Table *table = database->getTable("moz_places");
-
-        model = new RecordSetModel(table);
-        ui->tableView->setModel(model);
+void MainWindow::loadTable(QString tableName)
+{
+    try
+    {
+        sqlite::Table *table = database.tables.getTable(tableName);
+        model.setRecordSet(table);
     }
     catch(sqlite::Exception &e)
     {

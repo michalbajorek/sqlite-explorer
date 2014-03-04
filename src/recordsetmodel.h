@@ -5,14 +5,12 @@
 
 #include "sqlite/recordset.h"
 
-
 class RecordSetModel : public QAbstractTableModel
 {
 public:
-    RecordSetModel(sqlite::RecordSet *recordSet);
+    RecordSetModel(sqlite::RecordSet *recordSet = NULL);
 
-private:
-    sqlite::RecordSet *recordSet;
+    void setRecordSet(sqlite::RecordSet *recordSet);
 
 private:
     // QAbstractItemModel interface
@@ -23,6 +21,8 @@ private:
 
     QVariant getDataDisplayRole(int rowIndex, int columnIndex) const;
     QVariant getHeaderDisplayRole(int columnIndex) const;
+
+    sqlite::RecordSet *recordSet;
 };
 
 #endif // RECORDSETMODEL_H

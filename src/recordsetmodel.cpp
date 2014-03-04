@@ -5,15 +5,26 @@ RecordSetModel::RecordSetModel(sqlite::RecordSet *recordSet)
     this->recordSet = recordSet;
 }
 
+void RecordSetModel::setRecordSet(sqlite::RecordSet *recordSet)
+{
+    beginResetModel();
+    this->recordSet = recordSet;
+    endResetModel();
+}
+
 
 int RecordSetModel::rowCount(const QModelIndex &) const
 {
-    return recordSet->getRecordsCount();
+    if(recordSet)
+        return recordSet->getRecordsCount();
+    return 0;
 }
 
 int RecordSetModel::columnCount(const QModelIndex &parent) const
 {
-    return recordSet->getColumnsCount();
+    if(recordSet)
+        return recordSet->getColumnsCount();
+    return 0;
 }
 
 QVariant RecordSetModel::data(const QModelIndex &index, int role) const

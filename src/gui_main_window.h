@@ -21,10 +21,14 @@ public:
     void onProgressHandler(sqlite::Database *database, bool &cancelOperation);
 private slots:
     void on_pushButton_clicked();
+    void loadTable(QString tableName);
 
 private:
+    void loadTablesToCombo();
+
     Ui::MainWindow *ui;
-    RecordSetModel *model;
+    RecordSetModel model;
+    sqlite::Database database;
 };
 
 #endif // GUI_MAIN_WINDOW_H

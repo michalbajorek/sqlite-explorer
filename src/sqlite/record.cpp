@@ -4,10 +4,10 @@ using namespace sqlite;
 
 void Record::initRecordFromQuery(Query &query)
 {
-    clear();
+    fieldList.clear();
     int columnsCount = query.getColumnsCount();
     for(int columnIndex = 0; columnIndex < columnsCount; columnIndex++)
-        append(query.getTextValue(columnIndex));
+        fieldList.append(query.getTextValue(columnIndex));
 }
 
 RecordBuffer::RecordBuffer()

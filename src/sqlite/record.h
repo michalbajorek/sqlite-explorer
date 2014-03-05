@@ -10,13 +10,21 @@
 namespace sqlite
 {
 
-class Record : public QStringList
+class Record
 {
 public:
     Record()
         { }
 
+    int getCount()
+        { return fieldList.count(); }
+
+    const QString& getField(int index)
+        { return fieldList.at(index); }
+
     void initRecordFromQuery(Query &query);
+private:
+    QStringList fieldList;
 };
 
 class RecordBuffer

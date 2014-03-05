@@ -21,9 +21,9 @@ public:
     Table* getTable(const QString &tableName);
     Table* getTable(int index);
 
-
 private:
-    void loadTables();
+    void load();
+    void clear();
     void addTable(const QString &tableName);
 
     QMap<QString, Table*> tableMap;

@@ -28,7 +28,8 @@ SOURCES += src/main.cpp\
     src/sqlite/tables.cpp \
     src/initialization.cpp \
     src/application.cpp \
-    src/recordsetmodel.cpp
+    src/recordsetmodel.cpp \
+    src/settings.cpp
 
 HEADERS  += src/gui_main_window.h \
     src/sqlite/sqlite3.h \
@@ -43,6 +44,7 @@ HEADERS  += src/gui_main_window.h \
     src/sqlite/tables.h \
     src/initialization.h \
     src/application.h \
-    src/recordsetmodel.h
+    src/recordsetmodel.h \
+    src/settings.h
 
 FORMS    += forms/gui_main_window.ui

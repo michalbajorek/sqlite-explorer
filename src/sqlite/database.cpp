@@ -20,7 +20,7 @@ void Database::open(const QString &fileName)
         throw Exception("Database alredy opened");
     int errorCode = sqlite3_open_v2(fileName.toUtf8(), &handle, SQLITE_OPEN_READWRITE, NULL);
     checkErrorCodeAndThrowException(errorCode);
-    tables.loadTables();
+    tables.load();
 }
 
 void Database::create(const QString &fileName)
@@ -33,8 +33,10 @@ void Database::create(const QString &fileName)
 
 void Database::close()
 {
+    tables.clear();
     int errorCode = sqlite3_close_v2(getHandle());
     checkErrorCodeAndThrowException(errorCode);
+    handle = NULL;
 }
 
 void Database::executeSimpleQuery(const QString &queryText)

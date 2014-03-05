@@ -15,14 +15,24 @@ Tables::~Tables()
 
 }
 
-void Tables::loadTables()
+void Tables::load()
 {
     RecordSet getTables(database, "SELECT name FROM sqlite_master WHERE type = 'table'");
     for(int index = 0; index < getTables.getRecordsCount(); index++)
     {
         Record &record = getTables.getRecord(index);
-        addTable(record[0]);
+        addTable(record.getField(0));
     }
+}
+
+void Tables::clear()
+{
+    foreach(auto it, tableMap)
+    {
+        Table *table = it;
+        delete table;
+    }
+    tableMap.clear();
 }
 
 Table* Tables::getTable(const QString &tableName)
@@ -35,8 +45,8 @@ Table* Tables::getTable(const QString &tableName)
 
 Table *Tables::getTable(int index)
 {
-    auto iterator = tableMap.begin();
-    return (iterator + index).value();
+    auto iterator = tableMap.begin() + index; // Iterator has operator+
+    return iterator.value();
 }
 
 void Tables::addTable(const QString &tableName)

@@ -20,7 +20,7 @@ int RecordSetModel::rowCount(const QModelIndex &) const
     return 0;
 }
 
-int RecordSetModel::columnCount(const QModelIndex &parent) const
+int RecordSetModel::columnCount(const QModelIndex &) const
 {
     if(recordSet)
         return recordSet->getColumnsCount();
@@ -58,7 +58,11 @@ QVariant RecordSetModel::headerData(int index, Qt::Orientation orientation, int 
 QVariant RecordSetModel::getDataDisplayRole(int rowIndex, int columnIndex) const
 {
     sqlite::Record &record = recordSet->getRecord(rowIndex);
-    return QVariant(record[columnIndex]);
+    const QString &string = record.getField(columnIndex);
+    if(string.length() > MaxFieldLength)
+        return QVariant(string.left(MaxFieldLength));
+    else
+        return QVariant(string);
 }
 
 QVariant RecordSetModel::getHeaderDisplayRole(int columnIndex) const

@@ -11,6 +11,8 @@ public:
     RecordSetModel(sqlite::RecordSet *recordSet = NULL);
 
     void setRecordSet(sqlite::RecordSet *recordSet);
+    void clearRecordSet()
+        { setRecordSet(NULL); }
 
 private:
     // QAbstractItemModel interface
@@ -23,6 +25,8 @@ private:
     QVariant getHeaderDisplayRole(int columnIndex) const;
 
     sqlite::RecordSet *recordSet;
+
+    static const int MaxFieldLength = 1000;
 };
 
 #endif // RECORDSETMODEL_H

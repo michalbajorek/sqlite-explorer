@@ -2,8 +2,9 @@
 #define GUI_MAIN_WINDOW_H
 
 #include <QMainWindow>
-#include "sqlite/database.h"
 #include "recordsetmodel.h"
+#include "ribbon/ribbon.h"
+#include "sqlite/database.h"
 
 namespace Ui {
 class MainWindow;
@@ -25,12 +26,13 @@ private slots:
 private:
     void trySetTableToModel(const QString &tableName);
     void loadTablesToCombo();
-    void tryOpenDatabase(const QString &fileName);
+    void tryOpenDatabase(QString fileName);
     void showExceptionMessage(sqlite::Exception &exception);
 
     Ui::MainWindow *ui;
     RecordSetModel model;
     sqlite::Database database;
+    ribbon::Ribbon *ribbonControl;
 };
 
 #endif // GUI_MAIN_WINDOW_H

@@ -24,6 +24,9 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
     ui->tableView->setModel(&model);
 
+    ribbonControl = new ribbon::Ribbon(this);
+    ui->verticalLayout->insertWidget(0, ribbonControl);
+
     connect(ui->comboTables, SIGNAL(currentIndexChanged(QString)), this, SLOT(loadTable(QString)));
     connect(ui->buttonOpen, SIGNAL(clicked()), this, SLOT(buttonOpenClicked()));
     connect(ui->buttonClose, SIGNAL(clicked()), this, SLOT(buttonCloseClicked()));
@@ -72,7 +75,7 @@ void MainWindow::buttonOpenClicked()
     }
 }
 
-void MainWindow::tryOpenDatabase(const QString &fileName)
+void MainWindow::tryOpenDatabase(QString fileName)
 try
 {
     if(database.isOpened())

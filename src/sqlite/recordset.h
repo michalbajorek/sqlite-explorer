@@ -21,15 +21,15 @@ public:
 
     void setQueryText(const QString &queryText);
 
-    int getRecordsCount()
+    int getRecordsCount() const
         { return recordsCount; }
 
-    Record& getRecord(int recordIndex);
+    const Record& getRecord(int recordIndex);
 
-    int getColumnsCount()
+    int getColumnsCount() const
         { return mainQuery.getColumnsCount(); }
 
-    QString getColumnName(int columnIndex)
+    QString getColumnName(int columnIndex) const
         { return mainQuery.getColumnName(columnIndex); }
 
 private:
@@ -38,16 +38,16 @@ private:
     void resetRecordBuffers();
     void allocateRecordBuffers();
     bool executeCountQuery();
-    Record& getRecordAndLoadBuffers(int recordIndex);
+    const Record &getRecordAndLoadBuffers(int recordIndex);
     QString getCountQueryText();
     QString getMainQueryText();
 
     void prepareMainQuery()
         { mainQuery.prepare(getMainQueryText()); }
 
-    void checkQueryIsSelect();
+    void checkQueryIsSelect() const;
 
-    bool checkIndexOutOfRange(int recordIndex)
+    bool checkIndexOutOfRange(int recordIndex) const
         { return recordIndex < 0 || recordIndex >= recordsCount; }
 
     void swapBuffers()

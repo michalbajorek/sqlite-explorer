@@ -14,7 +14,7 @@ public:
     Table(Database *database, const QString &name);
     ~Table();
 
-    QString getName()
+     const QString &getName() const
         { return name; }
 
 private:

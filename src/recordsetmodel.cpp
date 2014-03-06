@@ -57,7 +57,7 @@ QVariant RecordSetModel::headerData(int index, Qt::Orientation orientation, int 
 
 QVariant RecordSetModel::getDataDisplayRole(int rowIndex, int columnIndex) const
 {
-    sqlite::Record &record = recordSet->getRecord(rowIndex);
+    const sqlite::Record &record = recordSet->getRecord(rowIndex);
     const QString &string = record.getField(columnIndex);
     if(string.length() > MaxFieldLength)
         return QVariant(string.left(MaxFieldLength));

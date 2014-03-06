@@ -50,7 +50,7 @@ void Database::vacuum()
     executeSimpleQuery("VACUUM");
 }
 
-void Database::checkIsOpenedAndThrowException()
+void Database::checkIsOpenedAndThrowException() const
 {
     if(!isOpened())
         throw Exception("Database is not opened");

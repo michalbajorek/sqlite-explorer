@@ -1,4 +1,4 @@
-#include "exception.h"
+﻿#include "exception.h"
 #include "sqlite3.h"
 
 using namespace sqlite;

@@ -23,7 +23,7 @@ public:
     Database();
     ~Database();
 
-    sqlite3* getHandle()
+    sqlite3* getHandle() const
     {
         checkIsOpenedAndThrowException();
         return handle;
@@ -35,17 +35,14 @@ public:
     void executeSimpleQuery(const QString &queryText);
     void vacuum();
 
-    bool isOpened()
+    bool isOpened() const
         { return handle != NULL; }
-
-    Table* getTable(const QString &name);
-    Table* getMasterTable();
 
     ProgressHandler progressHandler;
     Tables tables;
 
 private:
-    void checkIsOpenedAndThrowException();
+    void checkIsOpenedAndThrowException() const;
 
     sqlite3 *handle;
 };

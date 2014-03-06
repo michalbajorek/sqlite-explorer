@@ -79,7 +79,7 @@ QString RecordSet::getCountQueryText()
     return "SELECT COUNT(*) " + queryText.right(queryText.length() - fromClauseIndex);
 }
 
-void RecordSet::checkQueryIsSelect()
+void RecordSet::checkQueryIsSelect() const
 {
     if(queryText.startsWith("SELECT", Qt::CaseInsensitive) == false)
         throw Exception("Not a SELECT statement");
@@ -94,7 +94,7 @@ QString RecordSet::getMainQueryText()
     return mainQuery;
 }
 
-Record &RecordSet::getRecord(int recordIndex)
+const Record &RecordSet::getRecord(int recordIndex)
 {
     if(checkIndexOutOfRange(recordIndex))
         throw Exception("Index out of range");
@@ -106,7 +106,7 @@ Record &RecordSet::getRecord(int recordIndex)
         return getRecordAndLoadBuffers(recordIndex);
 }
 
-Record &RecordSet::getRecordAndLoadBuffers(int recordIndex)
+ const Record &RecordSet::getRecordAndLoadBuffers(int recordIndex)
 {
     int startIndex = RecordBuffer::getStartIndexFromRecordIndex(recordIndex);
     if(firstBuffer->isRecordJustBeforeBuffer(recordIndex))

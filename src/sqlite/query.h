@@ -1,4 +1,4 @@
-#ifndef QUERY_H
+﻿#ifndef QUERY_H
 #define QUERY_H
 
 #include <QString>
@@ -25,28 +25,28 @@ public:
     void reset();
     void finalize();
 
-    bool isDone()
+    bool isDone() const
         { return lastStepResult == SQLITE_DONE; }
 
-    int getColumnsCount()
+    int getColumnsCount() const
         { return sqlite3_column_count(statement); }
 
-    QString getColumnName(int columnIndex)
+    QString getColumnName(int columnIndex) const
         { return sqlite3_column_name(statement, columnIndex); }
 
-    QString getQueryText()
+    QString getQueryText() const
         { return sqlite3_sql(statement); }
 
-    int getIntegerValue(int columnIndex)
+    int getIntegerValue(int columnIndex) const
         { return sqlite3_column_int(statement, columnIndex); }
 
-    int64_t getInt64Value(int columnIndex)
+    int64_t getInt64Value(int columnIndex) const
         { return sqlite3_column_int64(statement, columnIndex); }
 
-    double getDoubleValue(int columnIndex)
+    double getDoubleValue(int columnIndex) const
         { return sqlite3_column_double(statement, columnIndex); }
 
-    QString getTextValue(int columnIndex)
+    QString getTextValue(int columnIndex) const
         { return reinterpret_cast<const char*>(sqlite3_column_text(statement, columnIndex)); }
 
     void bindInteger(int paramIndex, int value);

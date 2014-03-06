@@ -20,7 +20,7 @@ void Tables::load()
     RecordSet getTables(database, "SELECT name FROM sqlite_master WHERE type = 'table'");
     for(int index = 0; index < getTables.getRecordsCount(); index++)
     {
-        Record &record = getTables.getRecord(index);
+        const Record &record = getTables.getRecord(index);
         addTable(record.getField(0));
     }
 }
@@ -35,7 +35,7 @@ void Tables::clear()
     tableMap.clear();
 }
 
-Table* Tables::getTable(const QString &tableName)
+Table* Tables::getTable(const QString &tableName) const
 {
     Table *table = tableMap[tableName];
     if(table == NULL)
@@ -43,7 +43,7 @@ Table* Tables::getTable(const QString &tableName)
     return table;
 }
 
-Table *Tables::getTable(int index)
+Table *Tables::getTable(int index) const
 {
     auto iterator = tableMap.begin() + index; // Iterator has operator+
     return iterator.value();

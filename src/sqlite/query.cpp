@@ -1,4 +1,4 @@
-#include <cassert>
+﻿#include <cassert>
 
 #include "database.h"
 #include "query.h"
@@ -18,6 +18,12 @@ Query::Query(Database *database, const QString &queryText) : Object(database)
 Query::~Query()
 {
     finalize();
+}
+
+void Query::init()
+{
+    lastStepResult = SQLITE_OK;
+    statement = NULL;
 }
 
 void Query::prepare(const QString &queryText)
@@ -82,10 +88,4 @@ void Query::bindText(int paramIndex, const QString &value)
 {
     int errorCode = sqlite3_bind_text(statement, paramIndex, value.toUtf8(), value.length(), NULL);
     checkErrorCodeAndThrowException(errorCode);
-}
-
-void Query::init()
-{
-    lastStepResult = SQLITE_OK;
-    statement = NULL;
 }

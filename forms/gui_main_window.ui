@@ -13,6 +13,13 @@
   <property name="windowTitle">
    <string>Sqlite Explorer</string>
   </property>
+  <property name="styleSheet">
+   <string notr="true">QTableView  
+{
+selection-background-color: red;
+
+}</string>
+  </property>
   <widget class="QWidget" name="centralWidget">
    <layout class="QVBoxLayout" name="verticalLayout">
     <item>
@@ -39,7 +46,11 @@
      </layout>
     </item>
     <item>
-     <widget class="QTableView" name="tableView"/>
+     <widget class="QTableView" name="tableView">
+      <property name="gridStyle">
+       <enum>Qt::DotLine</enum>
+      </property>
+     </widget>
     </item>
     <item>
      <layout class="QHBoxLayout" name="layoutButtons">

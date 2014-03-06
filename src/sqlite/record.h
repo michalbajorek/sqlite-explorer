@@ -16,10 +16,10 @@ public:
     Record()
         { }
 
-    int getCount()
+    int getCount() const
         { return fieldList.count(); }
 
-    const QString& getField(int index)
+    const QString &getField(int index) const
         { return fieldList.at(index); }
 
     void initRecordFromQuery(Query &query);
@@ -37,22 +37,22 @@ public:
     void loadRecordsFromQuery(int startIndex, Query &query);
     void loadNextRecordFromQuery(Query &query);
 
-    bool hasEmptySpace()
+    bool hasEmptySpace() const
         { return loadedCount < maxCount; }
 
-    int getLoadedCount()
+    int getLoadedCount() const
         { return loadedCount; }
 
-    bool containsRecord(int recordIndex)
+    bool containsRecord(int recordIndex) const
         { return recordIndex >= startIndex && recordIndex < startIndex + loadedCount; }
 
-    bool isRecordJustAfterBuffer(int recordIndex)
+    bool isRecordJustAfterBuffer(int recordIndex) const
         { return recordIndex >= startIndex + maxCount && recordIndex < startIndex + 2 * maxCount; }
 
-    bool isRecordJustBeforeBuffer(int recordIndex)
+    bool isRecordJustBeforeBuffer(int recordIndex) const
         { return recordIndex >= startIndex - maxCount && recordIndex < startIndex; }
 
-    Record& getRecord(int recordIndex)
+     const Record& getRecord(int recordIndex) const
     {
         assert(containsRecord(recordIndex));
         return buffer[recordIndex - startIndex];

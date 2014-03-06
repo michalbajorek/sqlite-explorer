@@ -1,4 +1,4 @@
-#include "database.h"
+﻿#include "database.h"
 #include "table.h"
 
 using namespace sqlite;

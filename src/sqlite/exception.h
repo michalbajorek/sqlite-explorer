@@ -1,4 +1,4 @@
-#ifndef EXCEPTION_H
+﻿#ifndef EXCEPTION_H
 #define EXCEPTION_H
 
 #include <QString>
@@ -16,7 +16,7 @@ public:
     #endif
     Exception(const QString &errorMessage);
 
-    int getErrorCode()
+    int getErrorCode() const
         { return errorCode; }
 
     QString getErrorMessage();

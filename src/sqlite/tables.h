@@ -15,11 +15,11 @@ public:
     Tables(Database *database);
     virtual ~Tables();
 
-    int getCount()
+    int getCount() const
         { return tableMap.count(); }
 
-    Table* getTable(const QString &tableName);
-    Table* getTable(int index);
+    Table* getTable(const QString &tableName) const;
+    Table* getTable(int index) const;
 
 private:
     void load();

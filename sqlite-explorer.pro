@@ -45,9 +45,6 @@ HEADERS  += src/gui_main_window.h \
     src/initialization.h \
     src/application.h \
     src/recordsetmodel.h \
-    src/settings.h \
-    src/ribbon/ribbon.h \
-    src/ribbon/tabs.h \
-    src/ribbon/tab.h
+    src/settings.h
 
 FORMS    += forms/gui_main_window.ui

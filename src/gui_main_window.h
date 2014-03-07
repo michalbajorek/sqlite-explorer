@@ -3,7 +3,6 @@
 
 #include <QMainWindow>
 #include "recordsetmodel.h"
-#include "ribbon/ribbon.h"
 #include "sqlite/database.h"
 
 namespace Ui {
@@ -32,7 +31,6 @@ private:
     Ui::MainWindow *ui;
     RecordSetModel model;
     sqlite::Database database;
-    ribbon::Ribbon *ribbonControl;
 };
 
 #endif // GUI_MAIN_WINDOW_H

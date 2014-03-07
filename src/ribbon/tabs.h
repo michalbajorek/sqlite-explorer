@@ -1,6 +1,7 @@
 ﻿#ifndef TABS_H
 #define TABS_H
 
+#include <QPainter>
 #include <QList>
 #include <QString>
 
@@ -15,6 +16,8 @@ public:
     Tabs();
 
     Tab* addTab(const QString &caption);
+
+    void draw(QPainter &painter);
 
 private:
     void updateView();

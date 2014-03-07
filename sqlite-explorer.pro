@@ -29,10 +29,7 @@ SOURCES += src/main.cpp\
     src/initialization.cpp \
     src/application.cpp \
     src/recordsetmodel.cpp \
-    src/settings.cpp \
-    src/ribbon/ribbon.cpp \
-    src/ribbon/tabs.cpp \
-    src/ribbon/tab.cpp
+    src/settings.cpp
 
 HEADERS  += src/gui_main_window.h \
     src/sqlite/sqlite3.h \

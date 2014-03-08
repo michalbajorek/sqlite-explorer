@@ -42,7 +42,7 @@ void Database::executeSimpleQuery(const QString &queryText)
 
 void Database::vacuum()
 {
-    executeSimpleQuery("VACUUM");
+    Api::exec(getHandle(), "VACUUM");
 }
 
 void Database::checkIsOpened() const

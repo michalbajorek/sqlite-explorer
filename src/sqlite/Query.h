@@ -25,8 +25,11 @@ public:
     void reset();
     void finalize();
 
+    bool isActive() const
+        { return statement != NULL; }
+
     bool isDone() const
-        { return lastStepResult; }
+        { return !isInProgress; }
 
     int getColumnsCount() const
         { return Api::columnCount(statement); }
@@ -35,7 +38,7 @@ public:
         { return Api::columnName(statement, column); }
 
     QString getQueryText() const
-        { return Api::sql(statement); }
+        { return Api::getSql(statement); }
 
     int getIntegerValue(int column) const
         { return Api::columnInt(statement, column); }
@@ -59,7 +62,7 @@ private:
     void init();
 
     sqlite3_stmt *statement;
-    bool lastStepResult;
+    bool isInProgress;
 };
 
 } // namespace sqlite

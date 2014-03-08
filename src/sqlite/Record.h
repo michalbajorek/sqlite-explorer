@@ -54,6 +54,11 @@ public:
 
      const Record& getRecord(int recordIndex) const
     {
+        if(!containsRecord(recordIndex))
+        {
+            recordIndex += 1;
+            recordIndex -= 1;
+        }
         assert(containsRecord(recordIndex));
         return buffer[recordIndex - startIndex];
     }

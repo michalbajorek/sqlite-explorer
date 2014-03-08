@@ -9,24 +9,15 @@ namespace sqlite
 class Exception
 {
 public:
-    Exception(int errorCode);
-    Exception(const QString &errorMessage);
+    Exception(const QString &errorMessage)
+        { this->errorMessage = errorMessage; }
 
-    int getErrorCode() const
-        { return errorCode; }
-
-    QString getErrorMessage();
-
-    static const int NoErrorCode = -1;
+    const QString &getErrorMessage()
+        { return errorMessage; }
 
 private:
-    int errorCode;
     QString errorMessage;
-
-
 };
-
-void checkErrorCodeAndThrowException(int errorCode);
 
 } // namespace sqlite
 

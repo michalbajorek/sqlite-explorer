@@ -14,6 +14,9 @@ public:
     Table(Database *database, const QString &name);
     ~Table();
 
+    void loadContent()
+        { setQueryText("SELECT * FROM " + name); }
+
      const QString &getName() const
         { return name; }
 

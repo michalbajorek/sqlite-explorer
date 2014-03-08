@@ -17,10 +17,10 @@ public:
         sqlite3 *handle;
         int result = sqlite3_open_v2(fileName.toUtf8(), &handle, flags, NULL);
         if(isError(result))
-            {
+        {
             sqlite3_close(handle);
             throwException(result);
-            }
+        }
         return handle;
     }
 
@@ -73,7 +73,7 @@ public:
             throwException(result);
     }
 
-    static QString sql(sqlite3_stmt *statement)
+    static QString getSql(sqlite3_stmt *statement)
     {
         return sqlite3_sql(statement);
     }
@@ -124,15 +124,25 @@ public:
         return reinterpret_cast<const char*>(sqlite3_column_text(statement, column));
     }
 
-private:
-    static inline bool isError(int result)
+    static void progressHandler(sqlite3 *handle, int operationInterval, int (*function)(void *), void *data)
+    {
+        sqlite3_progress_handler(handle, operationInterval, function, data);
+    }
+
+    static QString getErrorString(int result)
+    {
+        return sqlite3_errstr(result);
+    }
+
+    static bool isError(int result)
     {
         return result != SQLITE_OK;
     }
 
-    static inline void throwException(int result)
+private:
+    static void throwException(int result)
     {
-        throw Exception(result);
+        throw Exception(getErrorString(result));
     }
 
 };

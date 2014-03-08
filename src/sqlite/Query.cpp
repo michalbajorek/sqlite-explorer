@@ -23,7 +23,7 @@ Query::~Query()
 
 void Query::init()
 {
-    lastStepResult = SQLITE_OK;
+    isInProgress = false;
     statement = NULL;
 }
 
@@ -35,8 +35,8 @@ void Query::prepare(const QString &query)
 
 bool Query::step()
 {
-    lastStepResult = Api::step(statement);
-    return lastStepResult;
+    isInProgress = Api::step(statement);
+    return isInProgress;
 }
 
 void Query::reset()

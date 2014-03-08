@@ -17,6 +17,7 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
+    void connectSignals();
 private slots:
     void loadTable(QString tableName);
     void buttonOpenClicked();

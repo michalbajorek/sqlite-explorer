@@ -1,0 +1,8 @@
+<RCC>
+    <qresource prefix="/Icons/32">
+        <file>icons/32/OpenDatabase.png</file>
+    </qresource>
+    <qresource prefix="/Icons/16">
+        <file>icons/16/OpenDatabase.png</file>
+    </qresource>
+</RCC>

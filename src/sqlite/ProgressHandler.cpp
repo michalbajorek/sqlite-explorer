@@ -1,6 +1,7 @@
-﻿#include "Database.h"
+﻿#include "Api.h"
+#include "Database.h"
 #include "ProgressHandler.h"
-#include "sqlite3.h"
+
 
 using namespace sqlite;
 
@@ -49,12 +50,12 @@ void ProgressHandler::setOperationInterval(int operationInterval)
 
 void ProgressHandler::setHandler()
 {
-    sqlite3_progress_handler(database->getHandle(), operationInterval, staticProgressHandler, this);
+    Api::progressHandler(database->getHandle(), operationInterval, staticProgressHandler, this);
 }
 
 void ProgressHandler::removeHandler()
 {
-    sqlite3_progress_handler(database->getHandle(), 0, NULL, NULL);
+    Api::progressHandler(database->getHandle(), 0, NULL, NULL);
 }
 
 int ProgressHandler::staticProgressHandler(void *param)

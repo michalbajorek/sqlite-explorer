@@ -13,9 +13,10 @@
 #include "sqlite/Query.h"
 #include "sqlite/Table.h"
 
-#include "ui_gui_main_window.h"
+#include "ui_MainWindow.h"
 
 QSettings settings;
+
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -24,9 +25,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
     ui->tableView->setModel(&model);
 
-    connect(ui->comboTables, SIGNAL(currentIndexChanged(QString)), this, SLOT(loadTable(QString)));
-    connect(ui->buttonOpen, SIGNAL(clicked()), this, SLOT(buttonOpenClicked()));
-    connect(ui->buttonClose, SIGNAL(clicked()), this, SLOT(buttonCloseClicked()));
+    connectSignals();
 
     globalSettings.loadWindowGeometry(this);
 }
@@ -35,6 +34,13 @@ MainWindow::~MainWindow()
 {
     globalSettings.saveWindowGeometry(this);
     delete ui;
+}
+
+void MainWindow::connectSignals()
+{
+    connect(ui->comboTables, SIGNAL(currentIndexChanged(QString)), this, SLOT(loadTable(QString)));
+    connect(ui->actionOpenDatabase, SIGNAL(triggered()), this, SLOT(buttonOpenClicked()));
+    connect(ui->actionCloseDatabase, SIGNAL(triggered()), this, SLOT(buttonCloseClicked()));
 }
 
 void MainWindow::loadTable(QString tableName)
@@ -48,6 +54,8 @@ void MainWindow::trySetTableToModel(const QString &tableName)
 try
 {
     sqlite::Table *table = database.tables.getTable(tableName);
+    if(table->isLoaded() == false)
+        table->loadContent();
     model.setRecordSet(table);
 }
 catch(sqlite::Exception &exception)
@@ -63,7 +71,6 @@ void MainWindow::showExceptionMessage(sqlite::Exception &exception)
 void MainWindow::buttonOpenClicked()
 {
     QFileDialog fileDialog(this);
-
     fileDialog.setNameFilter("Sqlite database (*.sqlite)");
     if(fileDialog.exec())
     {

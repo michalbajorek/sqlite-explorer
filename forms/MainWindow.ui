@@ -52,30 +52,6 @@ selection-background-color: red;
       </property>
      </widget>
     </item>
-    <item>
-     <layout class="QHBoxLayout" name="layoutButtons">
-      <property name="topMargin">
-       <number>0</number>
-      </property>
-      <property name="bottomMargin">
-       <number>0</number>
-      </property>
-      <item>
-       <widget class="QPushButton" name="buttonOpen">
-        <property name="text">
-         <string>Open database</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QPushButton" name="buttonClose">
-        <property name="text">
-         <string>Close database</string>
-        </property>
-       </widget>
-      </item>
-     </layout>
-    </item>
    </layout>
   </widget>
   <widget class="QMenuBar" name="menuBar">
@@ -88,8 +64,43 @@ selection-background-color: red;
     </rect>
    </property>
   </widget>
+  <widget class="QToolBar" name="toolBar">
+   <property name="windowTitle">
+    <string>toolBar</string>
+   </property>
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+   <addaction name="actionOpenDatabase"/>
+   <addaction name="actionCloseDatabase"/>
+  </widget>
+  <action name="actionOpenDatabase">
+   <property name="icon">
+    <iconset resource="../res/Resources.qrc">
+     <normaloff>:/Icons/32/icons/32/OpenDatabase.png</normaloff>:/Icons/32/icons/32/OpenDatabase.png</iconset>
+   </property>
+   <property name="text">
+    <string>Open database</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+O</string>
+   </property>
+  </action>
+  <action name="actionCloseDatabase">
+   <property name="text">
+    <string>Close Database</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+W</string>
+   </property>
+  </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
- <resources/>
+ <resources>
+  <include location="../res/Resources.qrc"/>
+ </resources>
  <connections/>
 </ui>

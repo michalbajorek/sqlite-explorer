@@ -19,11 +19,11 @@ public:
     RecordSet(Database *database, const QString &queryText);
     virtual ~RecordSet();
 
+    bool isLoaded()
+        { return mainQuery.isActive(); }
+
     void setQueryText(const QString &queryText);
-
-    int getRecordsCount() const
-        { return recordsCount; }
-
+    int getRecordsCount() const;
     const Record& getRecord(int recordIndex);
 
     int getColumnsCount() const
@@ -47,9 +47,6 @@ private:
 
     void checkQueryIsSelect() const;
 
-    bool checkIndexOutOfRange(int recordIndex) const
-        { return recordIndex < 0 || recordIndex >= recordsCount; }
-
     void swapBuffers()
         { std::swap(firstBuffer, secondBuffer); }
 
@@ -63,6 +60,11 @@ private:
 
     void loadAllBuffers(int startIndex)
         { loadRecordBuffers(startIndex, true, true); }
+
+    void checkIndexOutOfRange(int recordIndex) const;
+    void checkIsLoaded() const;
+
+
 
     int recordsCount;
     QString queryText;

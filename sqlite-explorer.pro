@@ -15,6 +15,10 @@ TEMPLATE = app
 LIBS += -ldl
 CONFIG += c++11
 
+CONFIG(release) {
+#    QMAKE_CXXFLAGS += -O3
+}
+
 CONFIG(debug, debug|release) {
     DEFINES += _DEBUG
 }
@@ -68,3 +72,6 @@ testcase {
     HEADERS += src/tests/TestQuery.h
     DEFINES += TESTCASE
 }
+
+RESOURCES += \
+    res/Resources.qrc

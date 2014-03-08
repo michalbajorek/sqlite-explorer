@@ -38,6 +38,12 @@ void RecordSet::setQueryText(const QString &queryText)
     prepareRecords();
 }
 
+int RecordSet::getRecordsCount() const
+{
+    checkIsLoaded();
+    return recordsCount;
+}
+
 void RecordSet::prepareRecords()
 {
     if(firstBuffer == NULL || secondBuffer == NULL)
@@ -96,8 +102,8 @@ QString RecordSet::getMainQueryText()
 
 const Record &RecordSet::getRecord(int recordIndex)
 {
-    if(checkIndexOutOfRange(recordIndex))
-        throw Exception("Index out of range");
+    checkIsLoaded();
+    checkIndexOutOfRange(recordIndex);
     if(firstBuffer->containsRecord(recordIndex))
         return firstBuffer->getRecord(recordIndex);
     else if(secondBuffer->containsRecord(recordIndex))
@@ -140,4 +146,18 @@ void RecordSet::loadRecordBuffers(int startIndex, bool loadFirstBuffer, bool loa
     if(loadSecondBuffer && mainQuery.isDone() == false)
         secondBuffer->loadRecordsFromQuery(startIndex, mainQuery);
     mainQuery.reset();
+}
+
+void RecordSet::checkIndexOutOfRange(int recordIndex) const
+{
+    checkIsLoaded();
+    if(recordIndex < 0 || recordIndex >= recordsCount)
+        throw Exception("Index out of range");
+
+}
+
+void RecordSet::checkIsLoaded() const
+{
+    if(mainQuery.isActive() == false)
+        throw Exception("Recordset is not loaded");
 }

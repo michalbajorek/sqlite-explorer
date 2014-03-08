@@ -3,9 +3,9 @@
 
 #include <QStringList>
 
-#include "query.h"
-#include "object.h"
-#include "record.h"
+#include "Query.h"
+#include "Object.h"
+#include "Record.h"
 
 namespace sqlite
 {

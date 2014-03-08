@@ -1,5 +1,5 @@
-﻿#include "database.h"
-#include "table.h"
+﻿#include "Database.h"
+#include "Table.h"
 
 using namespace sqlite;
 

@@ -1,5 +1,5 @@
-﻿#include "database.h"
-#include "progress_handler.h"
+﻿#include "Database.h"
+#include "ProgressHandler.h"
 #include "sqlite3.h"
 
 using namespace sqlite;

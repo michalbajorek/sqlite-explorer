@@ -1,5 +1,5 @@
 ﻿#include <QWidget>
-#include "settings.h"
+#include "Settings.h"
 
 Settings globalSettings;
 

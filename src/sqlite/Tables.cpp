@@ -1,7 +1,7 @@
-﻿#include "database.h"
-#include "recordset.h"
-#include "table.h"
-#include "tables.h"
+﻿#include "Database.h"
+#include "RecordSet.h"
+#include "Table.h"
+#include "Tables.h"
 
 using namespace sqlite;
 

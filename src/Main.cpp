@@ -1,4 +1,6 @@
-﻿#include "application.h"
+﻿#include "Application.h"
+
+#ifndef TESTCASE
 
 int main(int argc, char *argv[])
 {
@@ -7,3 +9,5 @@ int main(int argc, char *argv[])
     application.createMainWindow();
     return application.run();
 }
+
+#endif // TESTCASE

@@ -2,14 +2,12 @@
 #define DATABASE_H
 
 #include <QString>
-#include <QSet>
-#include <QMap>
 
-#include "exception.h"
-#include "object.h"
-#include "progress_handler.h"
+#include "Exception.h"
+#include "Object.h"
+#include "ProgressHandler.h"
 #include "sqlite3.h"
-#include "tables.h"
+#include "Tables.h"
 
 namespace sqlite
 {
@@ -25,7 +23,7 @@ public:
 
     sqlite3* getHandle() const
     {
-        checkIsOpenedAndThrowException();
+        checkIsOpened();
         return handle;
     }
 
@@ -42,7 +40,8 @@ public:
     Tables tables;
 
 private:
-    void checkIsOpenedAndThrowException() const;
+    void checkIsOpened() const;
+    void checkIsNotOpened() const;
 
     sqlite3 *handle;
 };

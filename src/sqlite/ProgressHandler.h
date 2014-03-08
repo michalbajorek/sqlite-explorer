@@ -3,7 +3,7 @@
 
 #include <QSet>
 
-#include "object.h"
+#include "Object.h"
 
 namespace sqlite
 {

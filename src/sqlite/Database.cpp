@@ -1,5 +1,6 @@
-﻿#include "database.h"
-#include "table.h"
+﻿#include "Api.h"
+#include "Database.h"
+#include "Table.h"
 
 using namespace sqlite;
 
@@ -16,33 +17,27 @@ Database::~Database()
 
 void Database::open(const QString &fileName)
 {
-    if(isOpened())
-        throw Exception("Database alredy opened");
-    int errorCode = sqlite3_open_v2(fileName.toUtf8(), &handle, SQLITE_OPEN_READWRITE, NULL);
-    checkErrorCodeAndThrowException(errorCode);
+    checkIsNotOpened();
+    handle = Api::open(fileName, SQLITE_OPEN_READWRITE);
     tables.load();
 }
 
 void Database::create(const QString &fileName)
 {
-    if(isOpened())
-        throw Exception("Database alredy opened");
-    int errorCode = sqlite3_open_v2(fileName.toUtf8(), &handle, SQLITE_OPEN_CREATE | SQLITE_OPEN_READWRITE, NULL);
-    checkErrorCodeAndThrowException(errorCode);
+    checkIsNotOpened();
+    handle = Api::open(fileName, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE);
 }
 
 void Database::close()
 {
     tables.clear();
-    int errorCode = sqlite3_close_v2(getHandle());
-    checkErrorCodeAndThrowException(errorCode);
+    Api::close(getHandle());
     handle = NULL;
 }
 
 void Database::executeSimpleQuery(const QString &queryText)
 {
-    int errorCode = sqlite3_exec(getHandle(), queryText.toUtf8(), NULL, NULL, NULL);
-    checkErrorCodeAndThrowException(errorCode);
+    Api::exec(getHandle(), queryText);
 }
 
 void Database::vacuum()
@@ -50,8 +45,14 @@ void Database::vacuum()
     executeSimpleQuery("VACUUM");
 }
 
-void Database::checkIsOpenedAndThrowException() const
+void Database::checkIsOpened() const
 {
     if(!isOpened())
         throw Exception("Database is not opened");
+}
+
+void Database::checkIsNotOpened() const
+{
+    if(isOpened())
+        throw Exception("Database is alredy opened");
 }

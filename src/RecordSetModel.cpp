@@ -1,4 +1,4 @@
-﻿#include "recordsetmodel.h"
+﻿#include "RecordSetModel.h"
 
 RecordSetModel::RecordSetModel(sqlite::RecordSet *recordSet)
 {

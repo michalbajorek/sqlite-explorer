@@ -2,9 +2,9 @@
 
 #include <algorithm>
 
-#include "database.h"
-#include "exception.h"
-#include "recordset.h"
+#include "Database.h"
+#include "Exception.h"
+#include "RecordSet.h"
 
 using namespace sqlite;
 

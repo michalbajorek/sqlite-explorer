@@ -1,7 +1,7 @@
 ﻿#ifndef APPLICATION_H
 #define APPLICATION_H
 
-#include "initialization.h"
+#include "Initialization.h"
 
 class MainWindow;
 class QApplication;

@@ -1,7 +1,7 @@
 ﻿#ifndef TABLE_H
 #define TABLE_H
 
-#include "recordset.h"
+#include "RecordSet.h"
 
 namespace sqlite
 {

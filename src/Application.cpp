@@ -1,7 +1,7 @@
 ﻿#include <QApplication>
 
-#include "application.h"
-#include "gui_main_window.h"
+#include "Application.h"
+#include "MainWindow.h"
 
 Application::Application(int argumentCount, char *argumentTable[])
 {

@@ -1,18 +1,28 @@
-#ifndef TESTQUERY_H
+﻿#ifndef TESTQUERY_H
 #define TESTQUERY_H
 
-#include <QObject>
+#ifdef TESTCASE
 
-class TestQuery : public QObject
+#include <QtTest/QtTest>
+#include <QObject>
+#include <QDebug>
+
+#include "../sqlite/Database.h"
+
+class Test : public QObject
 {
     Q_OBJECT
-public:
-    explicit TestQuery(QObject *parent = 0);
+private slots:
+    void openNonexistentDatabase();
+    void openExistingDatabase();
+    void openDatabaseTwice();
+    void getHandleNotOpenedDatabase();
+    void getHandleOpenedDatabasde();
 
-signals:
-
-public slots:
+private:
 
 };
+
+#endif // TESTCASE
 
 #endif // TESTQUERY_H

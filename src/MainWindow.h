@@ -2,8 +2,8 @@
 #define GUI_MAIN_WINDOW_H
 
 #include <QMainWindow>
-#include "recordsetmodel.h"
-#include "sqlite/database.h"
+#include "RecordSetModel.h"
+#include "sqlite/Database.h"
 
 namespace Ui {
 class MainWindow;

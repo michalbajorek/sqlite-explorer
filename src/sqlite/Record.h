@@ -5,7 +5,7 @@
 
 #include <QStringList>
 
-#include "query.h"
+#include "Query.h"
 
 namespace sqlite
 {

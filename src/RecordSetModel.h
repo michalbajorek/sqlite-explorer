@@ -3,7 +3,7 @@
 
 #include <QAbstractTableModel>
 
-#include "sqlite/recordset.h"
+#include "sqlite/RecordSet.h"
 
 class RecordSetModel : public QAbstractTableModel
 {

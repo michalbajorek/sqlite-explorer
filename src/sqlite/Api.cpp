@@ -1,5 +1,2 @@
-#include "SqliteApi.h"
+﻿#include "Api.h"
 
-SqliteApi::SqliteApi()
-{
-}

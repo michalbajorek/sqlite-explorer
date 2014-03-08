@@ -6,45 +6,65 @@
 
 QT       += core gui
 
-greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
+greaterThan(QT_MAJOR_VERSION, 4) {
+    QT += widgets
+}
 
 TARGET = SqliteExplorer
 TEMPLATE = app
 LIBS += -ldl
-CONFIG(debug, release|debug):DEFINES += _DEBUG
 CONFIG += c++11
 
-SOURCES += src/main.cpp\
-    src/gui_main_window.cpp \
-    src/sqlite/table.cpp \
+CONFIG(debug, debug|release) {
+    DEFINES += _DEBUG
+}
+
+SOURCES +=\
     src/sqlite/sqlite3.c \
-    src/sqlite/database.cpp \
-    src/sqlite/object.cpp \
-    src/sqlite/exception.cpp \
-    src/sqlite/query.cpp \
-    src/sqlite/recordset.cpp \
-    src/sqlite/record.cpp \
-    src/sqlite/progress_handler.cpp \
-    src/sqlite/tables.cpp \
-    src/initialization.cpp \
-    src/application.cpp \
-    src/recordsetmodel.cpp \
-    src/settings.cpp
+    src/sqlite/Database.cpp \
+    src/sqlite/Object.cpp \
+    src/sqlite/Exception.cpp \
+    src/sqlite/ProgressHandler.cpp \
+    src/sqlite/Query.cpp \
+    src/sqlite/Record.cpp \
+    src/sqlite/RecordSet.cpp \
+    src/sqlite/Table.cpp \
+    src/sqlite/Tables.cpp \
+    src/Application.cpp \
+    src/MainWindow.cpp \
+    src/Initialization.cpp \
+    src/Main.cpp \
+    src/RecordSetModel.cpp \
+    src/Settings.cpp \
+    src/sqlite/Api.cpp
 
-HEADERS  += src/gui_main_window.h \
+
+HEADERS  += \
     src/sqlite/sqlite3.h \
-    src/sqlite/database.h \
-    src/sqlite/table.h \
-    src/sqlite/object.h \
-    src/sqlite/exception.h \
-    src/sqlite/query.h \
-    src/sqlite/recordset.h \
-    src/sqlite/record.h \
-    src/sqlite/progress_handler.h \
-    src/sqlite/tables.h \
-    src/initialization.h \
-    src/application.h \
-    src/recordsetmodel.h \
-    src/settings.h
+    src/sqlite/Database.h \
+    src/sqlite/Exception.h \
+    src/sqlite/Object.h \
+    src/sqlite/ProgressHandler.h \
+    src/sqlite/Query.h \
+    src/sqlite/Record.h \
+    src/sqlite/RecordSet.h \
+    src/sqlite/Table.h \
+    src/sqlite/Tables.h \
+    src/Application.h \
+    src/MainWindow.h \
+    src/Initialization.h \
+    src/RecordSetModel.h \
+    src/Settings.h \
+    src/sqlite/Api.h
 
-FORMS    += forms/gui_main_window.ui
+
+FORMS    += \
+    forms/MainWindow.ui
+
+
+testcase {
+    QT += testlib
+    SOURCES += src/tests/TestQuery.cpp
+    HEADERS += src/tests/TestQuery.h
+    DEFINES += TESTCASE
+}

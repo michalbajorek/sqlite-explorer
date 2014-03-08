@@ -3,8 +3,8 @@
 
 #include <QString>
 
-#include "object.h"
-#include "sqlite3.h"
+#include "Api.h"
+#include "Object.h"
 
 
 namespace sqlite
@@ -16,49 +16,50 @@ class Query : public Object
 {
 public:
     Query(Database *database);
-    Query(Database *database, const QString &queryText);
+    Query(Database *database, const QString &query);
 
     virtual ~Query();
 
-    void prepare(const QString &queryText);
+    void prepare(const QString &query);
     bool step();
     void reset();
     void finalize();
 
     bool isDone() const
-        { return lastStepResult == SQLITE_DONE; }
+        { return lastStepResult; }
 
     int getColumnsCount() const
-        { return sqlite3_column_count(statement); }
+        { return Api::columnCount(statement); }
 
-    QString getColumnName(int columnIndex) const
-        { return sqlite3_column_name(statement, columnIndex); }
+    QString getColumnName(int column) const
+        { return Api::columnName(statement, column); }
 
     QString getQueryText() const
-        { return sqlite3_sql(statement); }
+        { return Api::sql(statement); }
 
-    int getIntegerValue(int columnIndex) const
-        { return sqlite3_column_int(statement, columnIndex); }
+    int getIntegerValue(int column) const
+        { return Api::columnInt(statement, column); }
 
-    int64_t getInt64Value(int columnIndex) const
-        { return sqlite3_column_int64(statement, columnIndex); }
+    double getDoubleValue(int column) const
+        { return Api::columnDouble(statement, column); }
 
-    double getDoubleValue(int columnIndex) const
-        { return sqlite3_column_double(statement, columnIndex); }
+    QString getTextValue(int column) const
+        { return Api::columnText(statement, column); }
 
-    QString getTextValue(int columnIndex) const
-        { return reinterpret_cast<const char*>(sqlite3_column_text(statement, columnIndex)); }
+    void bindInteger(int param, int value)
+        { Api::bindInt(statement, param, value); }
 
-    void bindInteger(int paramIndex, int value);
-    void bindInt64(int paramIndex, int64_t value);
-    void bindDouble(int paramIndex, double value);
-    void bindText(int paramIndex, const QString &value);
+    void bindDouble(int param, double value)
+        { Api::bindDouble(statement, param, value); }
+
+    void bindText(int param, const QString &value)
+        { Api::bindText(statement, param, value); }
 
 private:
     void init();
 
     sqlite3_stmt *statement;
-    int lastStepResult;
+    bool lastStepResult;
 };
 
 } // namespace sqlite

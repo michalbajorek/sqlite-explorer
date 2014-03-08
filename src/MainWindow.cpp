@@ -4,14 +4,14 @@
 #include <QFileDialog>
 #include <QSettings>
 
-#include "gui_main_window.h"
-#include "settings.h"
-#include "sqlite/database.h"
-#include "sqlite/exception.h"
-#include "sqlite/object.h"
-#include "sqlite/recordset.h"
-#include "sqlite/query.h"
-#include "sqlite/table.h"
+#include "MainWindow.h"
+#include "Settings.h"
+#include "sqlite/Database.h"
+#include "sqlite/Exception.h"
+#include "sqlite/Object.h"
+#include "sqlite/RecordSet.h"
+#include "sqlite/Query.h"
+#include "sqlite/Table.h"
 
 #include "ui_gui_main_window.h"
 

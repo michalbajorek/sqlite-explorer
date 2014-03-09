@@ -16,20 +16,9 @@ class Table;
 
 class Database
 {
-    enum class OpenMode
-    {
-        Open,
-        Create,
-    };
 public:
     Database();
     ~Database();
-
-    sqlite3* getHandle() const
-    {
-        checkIsOpened();
-        return handle;
-    }
 
     void open(const QString &fileName)
         { internalOpen(fileName, OpenMode::Open); }
@@ -38,16 +27,29 @@ public:
         { internalOpen(fileName, OpenMode::Create); }
 
     void close();
-    void executeSimpleQuery(const QString &queryText);
-    void vacuum();
 
     bool isOpened() const
         { return handle != NULL; }
+
+    sqlite3* getHandle() const
+    {
+        checkIsOpened();
+        return handle;
+    }
+
+    void executeSimpleQuery(const QString &queryText);
+    void vacuum();
 
     ProgressHandler progressHandler;
     Tables tables;
 
 private:
+    enum class OpenMode
+    {
+        Open,
+        Create,
+    };
+
     int getOpenFlags(OpenMode openMode);
     void checkIsOpened() const;
     void checkIsNotOpened() const;

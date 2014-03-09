@@ -11,14 +11,10 @@ Query::Query(Database *database) : Object(database)
     init();
 }
 
-Query::Query(Database *database, const QString &query) : Object(database)
-{
-    prepare(query);
-}
-
 Query::~Query()
 {
-    finalize();
+    if(isActive())
+        finalize();
 }
 
 void Query::init()

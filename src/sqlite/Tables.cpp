@@ -17,7 +17,8 @@ Tables::~Tables()
 
 void Tables::load()
 {
-    RecordSet getTables(database, "SELECT name FROM sqlite_master WHERE type = 'table'");
+    RecordSet getTables(database);
+    getTables.setQueryText("SELECT name FROM sqlite_master WHERE type = 'table'");
     for(int index = 0; index < getTables.getRecordsCount(); index++)
     {
         const Record &record = getTables.getRecord(index);

@@ -16,7 +16,6 @@ class Query : public Object
 {
 public:
     Query(Database *database);
-    Query(Database *database, const QString &query);
 
     virtual ~Query();
 
@@ -28,7 +27,7 @@ public:
     bool isActive() const
         { return statement != NULL; }
 
-    bool isDone() const
+    bool isDone() const // TODO: Function name isDown is misleading
         { return !isInProgress; }
 
     int getColumnsCount() const

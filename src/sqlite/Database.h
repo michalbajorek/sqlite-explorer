@@ -48,6 +48,7 @@ public:
     Tables tables;
 
 private:
+    int getOpenFlags(OpenMode openMode);
     void checkIsOpened() const;
     void checkIsNotOpened() const;
     void internalOpen(const QString &fileName, OpenMode openMode);

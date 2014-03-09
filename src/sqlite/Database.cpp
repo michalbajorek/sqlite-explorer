@@ -18,16 +18,23 @@ Database::~Database()
 void Database::internalOpen(const QString &fileName, OpenMode openMode)
 {
     checkIsNotOpened();
-    int flags = SQLITE_OPEN_READWRITE;
-    if(openMode == OpenMode::Create)
-        flags |= SQLITE_OPEN_CREATE;
+    int flags = getOpenFlags(openMode);
     handle = Api::open(fileName, flags);
     if(openMode == OpenMode::Open)
         tables.load();
 }
 
+int Database::getOpenFlags(OpenMode openMode)
+{
+    int flags = SQLITE_OPEN_READWRITE;
+    if(openMode == OpenMode::Create)
+        flags |= SQLITE_OPEN_CREATE;
+    return flags;
+}
+
 void Database::close()
 {
+    checkIsOpened();
     tables.clear();
     Api::close(getHandle());
     handle = NULL;

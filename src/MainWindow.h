@@ -18,14 +18,14 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
-    void connectSignals();
 private slots:
     void loadTable(QString tableName);
     void buttonOpenClicked();
     void buttonCloseClicked();
-    void progressHandler();
+    void progressHandler(sqlite::Database *database, bool &cancelOperation);
 
 private:
+    void connectSignals();
     void trySetTableToModel(const QString &tableName);
     void loadTablesToCombo();
     void tryOpenDatabase(QString fileName);

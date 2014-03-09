@@ -17,7 +17,6 @@
 
 QSettings settings;
 
-
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
@@ -39,9 +38,9 @@ MainWindow::~MainWindow()
 void MainWindow::connectSignals()
 {
     connect(ui->comboTables, SIGNAL(currentIndexChanged(QString)), this, SLOT(loadTable(QString)));
-    connect(ui->actionOpenDatabase, SIGNAL(triggered()), this, SLOT(buttonOpenClicked()));
-    connect(ui->actionCloseDatabase, SIGNAL(triggered()), this, SLOT(buttonCloseClicked()));
-    connect(&database.progressHandler, SIGNAL(progress()), this, SLOT(progressHandler()));
+    connect(ui->actionOpenDatabase, &QAction::triggered, this, &MainWindow::buttonOpenClicked);
+    connect(ui->actionCloseDatabase, &QAction::triggered, this, &MainWindow::buttonCloseClicked);
+    connect(&database.progressHandler, &sqlite::ProgressHandler::progress, this, &MainWindow::progressHandler);
 }
 
 void MainWindow::loadTable(QString tableName)
@@ -114,6 +113,6 @@ void MainWindow::buttonCloseClicked()
 }
 
 
-void MainWindow::progressHandler()
+void MainWindow::progressHandler(sqlite::Database *, bool &)
 {
 }

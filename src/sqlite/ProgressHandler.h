@@ -25,7 +25,7 @@ public:
     void setOperationInterval(int operationInterval);
 
 signals:
-    void progress(/*Database* database, bool &cancelOperation*/);
+    void progress(sqlite::Database *database, bool &cancelOperation);
 
 private:
     void setHandler();

@@ -34,11 +34,13 @@ catch(sqlite::Exception &exception)
 {
     if(showQuitDialog(exception.getErrorMessage()))
         quit();
+    return -1;
 }
 catch(...)
 {
     if(showQuitDialog("Unhandled exception"))
         quit();
+    return -1;
 }
 
 bool Application::notify(QObject *receiver, QEvent *event)

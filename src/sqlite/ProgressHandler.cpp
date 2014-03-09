@@ -50,6 +50,6 @@ int ProgressHandler::staticProgressHandler(void *param)
 bool ProgressHandler::emitSignal()
 {
     bool cancelOperation = false;
-    emit progress();
+    emit progress(database, cancelOperation);
     return cancelOperation;
 }

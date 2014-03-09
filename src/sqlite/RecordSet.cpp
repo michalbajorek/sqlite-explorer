@@ -13,12 +13,6 @@ RecordSet::RecordSet(Database *database) : Object(database), mainQuery(database)
     init();
 }
 
-RecordSet::RecordSet(Database *database, const QString &queryText) : Object(database), mainQuery(database)
-{
-    init();
-    setQueryText(queryText);
-}
-
 void RecordSet::init()
 {
     recordsCount = 0;
@@ -68,7 +62,8 @@ void RecordSet::resetRecordBuffers()
 
 bool RecordSet::executeCountQuery()
 {
-    Query countQuery(database, getCountQueryText());
+    Query countQuery(database);
+    countQuery.prepare(getCountQueryText());
     if(countQuery.step())
     {
         recordsCount = countQuery.getIntegerValue(0);

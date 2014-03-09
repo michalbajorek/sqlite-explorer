@@ -16,7 +16,6 @@ class RecordSet : public Object
 {
 public:
     RecordSet(Database *database);
-    RecordSet(Database *database, const QString &queryText);
     virtual ~RecordSet();
 
     bool isLoaded()

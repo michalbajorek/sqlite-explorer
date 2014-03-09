@@ -63,10 +63,27 @@ selection-background-color: red;
      <height>20</height>
     </rect>
    </property>
+   <widget class="QMenu" name="menuDatabase">
+    <property name="title">
+     <string>Database</string>
+    </property>
+    <addaction name="actionOpenDatabase"/>
+    <addaction name="actionCloseDatabase"/>
+   </widget>
+   <addaction name="menuDatabase"/>
   </widget>
   <widget class="QToolBar" name="toolBar">
    <property name="windowTitle">
     <string>toolBar</string>
+   </property>
+   <property name="iconSize">
+    <size>
+     <width>32</width>
+     <height>32</height>
+    </size>
+   </property>
+   <property name="toolButtonStyle">
+    <enum>Qt::ToolButtonFollowStyle</enum>
    </property>
    <attribute name="toolBarArea">
     <enum>TopToolBarArea</enum>
@@ -80,7 +97,7 @@ selection-background-color: red;
   <action name="actionOpenDatabase">
    <property name="icon">
     <iconset resource="../res/Resources.qrc">
-     <normaloff>:/Icons/32/icons/32/OpenDatabase.png</normaloff>:/Icons/32/icons/32/OpenDatabase.png</iconset>
+     <normaloff>:/Icons/32/icons/32/addDatabase.png</normaloff>:/Icons/32/icons/32/addDatabase.png</iconset>
    </property>
    <property name="text">
     <string>Open database</string>
@@ -90,6 +107,10 @@ selection-background-color: red;
    </property>
   </action>
   <action name="actionCloseDatabase">
+   <property name="icon">
+    <iconset resource="../res/Resources.qrc">
+     <normaloff>:/Icons/32/icons/32/removDatabase.png</normaloff>:/Icons/32/icons/32/removDatabase.png</iconset>
+   </property>
    <property name="text">
     <string>Close Database</string>
    </property>

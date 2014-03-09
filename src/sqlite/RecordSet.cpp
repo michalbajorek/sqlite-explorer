@@ -24,6 +24,7 @@ void RecordSet::init()
     recordsCount = 0;
     firstBuffer = NULL;
     secondBuffer = NULL;
+    busy = false;
 }
 
 RecordSet::~RecordSet()
@@ -93,11 +94,11 @@ void RecordSet::checkQueryIsSelect() const
 
 QString RecordSet::getMainQueryText()
 {
-    QString mainQuery = queryText;
-    mainQuery.append(" LIMIT ");
-    mainQuery.append(QString::number(RecordBuffer::getMaxCount() * bufferCount));
-    mainQuery.append(" OFFSET ?");
-    return mainQuery;
+    QString mainQueryText = queryText;
+    mainQueryText.append(" LIMIT ");
+    mainQueryText.append(QString::number(RecordBuffer::getMaxCount() * bufferCount));
+    mainQueryText.append(" OFFSET ?");
+    return mainQueryText;
 }
 
 const Record &RecordSet::getRecord(int recordIndex)
@@ -137,6 +138,9 @@ const Record &RecordSet::getRecord(int recordIndex)
 
 void RecordSet::loadRecordBuffers(int startIndex, bool loadFirstBuffer, bool loadSecondBuffer)
 {
+    if(isBusy())
+        throw Exception("Can not load records. Database is busy");
+    busy = true;
     mainQuery.bindInteger(1, startIndex);
     if(loadFirstBuffer)
     {
@@ -146,6 +150,7 @@ void RecordSet::loadRecordBuffers(int startIndex, bool loadFirstBuffer, bool loa
     if(loadSecondBuffer && mainQuery.isDone() == false)
         secondBuffer->loadRecordsFromQuery(startIndex, mainQuery);
     mainQuery.reset();
+    busy = false;
 }
 
 void RecordSet::checkIndexOutOfRange(int recordIndex) const

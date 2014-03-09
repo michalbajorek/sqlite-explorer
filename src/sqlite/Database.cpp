@@ -15,17 +15,15 @@ Database::~Database()
         close();
 }
 
-void Database::open(const QString &fileName)
+void Database::internalOpen(const QString &fileName, OpenMode openMode)
 {
     checkIsNotOpened();
-    handle = Api::open(fileName, SQLITE_OPEN_READWRITE);
-    tables.load();
-}
-
-void Database::create(const QString &fileName)
-{
-    checkIsNotOpened();
-    handle = Api::open(fileName, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE);
+    int flags = SQLITE_OPEN_READWRITE;
+    if(openMode == OpenMode::Create)
+        flags |= SQLITE_OPEN_CREATE;
+    handle = Api::open(fileName, flags);
+    if(openMode == OpenMode::Open)
+        tables.load();
 }
 
 void Database::close()

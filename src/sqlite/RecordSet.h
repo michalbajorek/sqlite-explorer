@@ -22,6 +22,9 @@ public:
     bool isLoaded()
         { return mainQuery.isActive(); }
 
+    bool isBusy()
+        { return busy; }
+
     void setQueryText(const QString &queryText);
     int getRecordsCount() const;
     const Record& getRecord(int recordIndex);
@@ -65,7 +68,7 @@ private:
     void checkIsLoaded() const;
 
 
-
+    bool busy;
     int recordsCount;
     QString queryText;
     Query mainQuery;

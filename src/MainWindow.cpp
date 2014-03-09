@@ -41,6 +41,7 @@ void MainWindow::connectSignals()
     connect(ui->comboTables, SIGNAL(currentIndexChanged(QString)), this, SLOT(loadTable(QString)));
     connect(ui->actionOpenDatabase, SIGNAL(triggered()), this, SLOT(buttonOpenClicked()));
     connect(ui->actionCloseDatabase, SIGNAL(triggered()), this, SLOT(buttonCloseClicked()));
+    connect(&database.progressHandler, SIGNAL(progress()), this, SLOT(progressHandler()));
 }
 
 void MainWindow::loadTable(QString tableName)
@@ -104,7 +105,15 @@ void MainWindow::loadTablesToCombo()
 
 void MainWindow::buttonCloseClicked()
 {
-    model.clearRecordSet();
-    ui->comboTables->clear();
-    database.close();
+    if(database.isOpened())
+    {
+        model.clearRecordSet();
+        ui->comboTables->clear();
+        database.close();
+    }
+}
+
+
+void MainWindow::progressHandler()
+{
 }

@@ -1,6 +1,7 @@
 ﻿#ifndef PROGRESS_HANDLER_H
 #define PROGRESS_HANDLER_H
 
+#include <QObject>
 #include <QSet>
 
 #include "Object.h"
@@ -9,42 +10,32 @@ namespace sqlite
 {
 
 class Database;
-class ProgressHandler;
 
-class ProgressObserver
+class ProgressHandler : public QObject, public Object
 {
-public:
-    ProgressObserver();
-    virtual ~ProgressObserver();
-
-    virtual void onProgressHandler(Database *database, bool &cancelOperation) = 0;
-
-private:
-    ProgressHandler *progressHandler;
-
-    friend class ProgressHandler;
-};
-
-class ProgressHandler : public Object
-{
+    Q_OBJECT
 public:
     ProgressHandler(Database *database);
     ~ProgressHandler();
 
-    void addObserver(ProgressObserver *observer);
-    void removeObserver(ProgressObserver *observer);
+    void setEnabled(bool newEnabled);
+    bool isEnabled()
+        { return enabled; }
+
     void setOperationInterval(int operationInterval);
+
+signals:
+    void progress(/*Database* database, bool &cancelOperation*/);
 
 private:
     void setHandler();
     void removeHandler();
-    bool notifyObservers();
-    void removeAllObservers();
+    bool emitSignal();
 
     static int staticProgressHandler(void *param);
 
     int operationInterval;
-    QSet<ProgressObserver*> observersSet;
+    bool enabled;
 
 };
 

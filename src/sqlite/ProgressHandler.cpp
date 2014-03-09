@@ -2,43 +2,26 @@
 #include "Database.h"
 #include "ProgressHandler.h"
 
-
 using namespace sqlite;
-
-
-ProgressObserver::ProgressObserver()
-{
-    progressHandler = NULL;
-}
-
-ProgressObserver::~ProgressObserver()
-{
-    if(progressHandler)
-        progressHandler->removeObserver(this);
-}
 
 ProgressHandler::ProgressHandler(Database *database) : Object(database)
 {
     operationInterval = 10;
+    enabled = false;
 }
 
 ProgressHandler::~ProgressHandler()
 {
-    removeAllObservers();
+    if(enabled && database->isOpened())
+        removeHandler();
 }
 
-void ProgressHandler::addObserver(ProgressObserver *observer)
+void ProgressHandler::setEnabled(bool newEnabled)
 {
-    observersSet.insert(observer);
-    observer->progressHandler = this;
-    setHandler();
-}
-
-void ProgressHandler::removeObserver(ProgressObserver *observer)
-{
-    observersSet.remove(observer);
-    observer->progressHandler = NULL;
-    if(observersSet.empty())
+    enabled = newEnabled;
+    if(enabled)
+        setHandler();
+    else
         removeHandler();
 }
 
@@ -61,23 +44,12 @@ void ProgressHandler::removeHandler()
 int ProgressHandler::staticProgressHandler(void *param)
 {
     ProgressHandler *progressHandler = static_cast<ProgressHandler*>(param);
-    return progressHandler->notifyObservers();
+    return progressHandler->emitSignal();
 }
 
-bool ProgressHandler::notifyObservers()
+bool ProgressHandler::emitSignal()
 {
     bool cancelOperation = false;
-    foreach(ProgressObserver *observer, observersSet)
-    {
-        observer->onProgressHandler(database, cancelOperation);
-        if(cancelOperation)
-            break;
-    }
+    emit progress();
     return cancelOperation;
-}
-
-void ProgressHandler::removeAllObservers()
-{
-    foreach(ProgressObserver *observer, observersSet)
-        removeObserver(observer);
 }

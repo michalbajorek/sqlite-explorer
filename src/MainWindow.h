@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include "RecordSetModel.h"
 #include "sqlite/Database.h"
+#include "sqlite/ProgressHandler.h"
 
 namespace Ui {
 class MainWindow;
@@ -22,6 +23,7 @@ private slots:
     void loadTable(QString tableName);
     void buttonOpenClicked();
     void buttonCloseClicked();
+    void progressHandler();
 
 private:
     void trySetTableToModel(const QString &tableName);
@@ -32,6 +34,7 @@ private:
     Ui::MainWindow *ui;
     RecordSetModel model;
     sqlite::Database database;
+
 };
 
 #endif // GUI_MAIN_WINDOW_H

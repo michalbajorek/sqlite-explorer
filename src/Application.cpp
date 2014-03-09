@@ -1,18 +1,17 @@
-﻿#include <QApplication>
+﻿#include <QMessageBox>
 
 #include "Application.h"
 #include "MainWindow.h"
 
 Application::Application(int argumentCount, char *argumentTable[])
+: QApplication(argumentCount, argumentTable)
 {
-    qtApplication = new QApplication(argumentCount, argumentTable);
     mainWindow = NULL;
 }
 
 Application::~Application()
 {
     delete mainWindow;
-    delete qtApplication;
 }
 
 void Application::initialize()
@@ -27,6 +26,48 @@ void Application::createMainWindow()
 }
 
 int Application::run()
+try
 {
-    return qtApplication->exec();
+    return exec();
 }
+catch(sqlite::Exception &exception)
+{
+    if(showQuitDialog(exception.getErrorMessage()))
+        quit();
+}
+catch(...)
+{
+    if(showQuitDialog("Unhandled exception"))
+        quit();
+}
+
+bool Application::notify(QObject *receiver, QEvent *event)
+{
+    try
+    {
+        return QApplication::notify(receiver, event);
+    }
+    catch(sqlite::Exception &exception)
+    {
+        if(showQuitDialog(exception.getErrorMessage()))
+            quit();
+    }
+    catch(...)
+    {
+        if(showQuitDialog("Unhandled exception"))
+            quit();
+    }
+    return true;
+}
+
+bool Application::showQuitDialog(const QString &errorMessage)
+{
+    QMessageBox messageBox;
+    messageBox.setIcon(QMessageBox::Critical);
+    messageBox.setWindowTitle("Error");
+    messageBox.setText(errorMessage);
+    messageBox.addButton("Continue", QMessageBox::RejectRole);
+    messageBox.addButton("Quit application", QMessageBox::AcceptRole);
+    return messageBox.exec() == QDialog::Accepted;
+}
+

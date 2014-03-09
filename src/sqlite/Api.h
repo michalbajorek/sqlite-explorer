@@ -41,7 +41,7 @@ public:
     static sqlite3_stmt* prepare(sqlite3 *handle, const QString &query)
     {
         sqlite3_stmt *statement;
-        int result = sqlite3_prepare_v2(handle, query.toUtf8(), query.length(), &statement, NULL);
+        int result = sqlite3_prepare_v2(handle, query.toUtf8(), -1, &statement, NULL);
         if(isError(result))
             throwException(result);
         return statement;

@@ -23,8 +23,9 @@ CONFIG(debug, debug|release) {
     DEFINES += _DEBUG
 }
 
-SOURCES +=\
+SOURCES += \
     src/sqlite/sqlite3.c \
+    src/sqlite/Api.cpp \
     src/sqlite/Database.cpp \
     src/sqlite/Object.cpp \
     src/sqlite/Exception.cpp \
@@ -39,12 +40,12 @@ SOURCES +=\
     src/Initialization.cpp \
     src/Main.cpp \
     src/RecordSetModel.cpp \
-    src/Settings.cpp \
-    src/sqlite/Api.cpp
+    src/Settings.cpp
 
 
 HEADERS  += \
     src/sqlite/sqlite3.h \
+    src/sqlite/Api.h \
     src/sqlite/Database.h \
     src/sqlite/Exception.h \
     src/sqlite/Object.h \
@@ -58,9 +59,7 @@ HEADERS  += \
     src/MainWindow.h \
     src/Initialization.h \
     src/RecordSetModel.h \
-    src/Settings.h \
-    src/sqlite/Api.h
-
+    src/Settings.h
 
 FORMS    += \
     forms/MainWindow.ui
@@ -68,8 +67,9 @@ FORMS    += \
 
 testcase {
     QT += testlib
-    SOURCES += src/tests/TestQuery.cpp
-    HEADERS += src/tests/TestQuery.h
+    SOURCES += src/tests/Test.cpp
+    HEADERS += src/tests/TestThrowCheck.h \
+               src/tests/Test.h
     DEFINES += TESTCASE
 }
 

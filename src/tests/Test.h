@@ -3,23 +3,26 @@
 
 #ifdef TESTCASE
 
-#include <QtTest/QtTest>
+#include <QtTest>
 #include <QObject>
-#include <QDebug>
-
-#include "../sqlite/Database.h"
 
 class Test : public QObject
 {
     Q_OBJECT
 private slots:
+    // class Database
     void openNonexistentDatabase();
     void openExistingDatabase();
     void openDatabaseTwice();
     void getHandleNotOpenedDatabase();
     void getHandleOpenedDatabasde();
+    void execVacuum();
+    void executeProperSimpleQuery();
+    void executeBadSimpleQuery();
 
-private:
+    // class Query
+    void executeProperQuery();
+    void executeBadQuery();
 
 };
 

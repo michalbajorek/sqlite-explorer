@@ -20,3 +20,15 @@ void Settings::saveWindowGeometry(QWidget *widget)
     QByteArray geometry = widget->saveGeometry();
     settings.setValue(widget->objectName() + "Geometry", geometry);
 }
+
+void Settings::loadSplitterState(QSplitter *splitter)
+{
+    QByteArray state = settings.value(splitter->objectName() + "State").toByteArray();
+    splitter->restoreState(state);
+}
+
+void Settings::saveSplitterState(QSplitter *splitter)
+{
+    QByteArray state = splitter->saveState();
+    settings.setValue(splitter->objectName() + "State", state);
+}

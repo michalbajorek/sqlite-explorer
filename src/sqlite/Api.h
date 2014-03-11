@@ -134,6 +134,11 @@ public:
         return sqlite3_errstr(result);
     }
 
+    static QString getFileName(sqlite3 *handle)
+    {
+        return sqlite3_db_filename(handle, "main");
+    }
+
     static bool isError(int result)
     {
         return result != SQLITE_OK;

@@ -30,7 +30,7 @@ signals:
 private:
     void setHandler();
     void removeHandler();
-    bool emitSignal();
+    bool emitProgressSignal();
 
     static int staticProgressHandler(void *param);
 

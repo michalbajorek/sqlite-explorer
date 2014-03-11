@@ -8,9 +8,9 @@
 class RecordSetModel : public QAbstractTableModel
 {
 public:
-    RecordSetModel(sqlite::RecordSet *recordSet = NULL);
+    RecordSetModel();
 
-    void setRecordSet(sqlite::RecordSet *recordSet);
+    void setRecordSet(sqlite::RecordSet *newRecordSet);
     void clearRecordSet()
         { setRecordSet(NULL); }
 

@@ -3,6 +3,7 @@
 
 #include <QString>
 
+#include "Api.h"
 #include "Exception.h"
 #include "Object.h"
 #include "ProgressHandler.h"
@@ -37,6 +38,9 @@ public:
         return handle;
     }
 
+    QString getFileName()
+        { return Api::getFileName(handle); }
+
     void executeSimpleQuery(const QString &queryText);
     void vacuum();
 
@@ -50,7 +54,7 @@ private:
         Create,
     };
 
-    int getOpenFlags(OpenMode openMode);
+    int getOpenFlags(OpenMode openMode) const;
     void checkIsOpened() const;
     void checkIsNotOpened() const;
     void internalOpen(const QString &fileName, OpenMode openMode);

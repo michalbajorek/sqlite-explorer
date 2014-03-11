@@ -18,10 +18,10 @@ public:
     RecordSet(Database *database);
     virtual ~RecordSet();
 
-    bool isLoaded()
+    bool isLoaded() const
         { return mainQuery.isActive(); }
 
-    bool isBusy()
+    bool isBusy() const
         { return busy; }
 
     void setQueryText(const QString &queryText);

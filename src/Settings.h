@@ -2,6 +2,7 @@
 #define SETTINGS_H
 
 #include <QSettings>
+#include <QSplitter>
 
 class Settings
 {
@@ -10,6 +11,9 @@ public:
 
     void loadWindowGeometry(QWidget *widget);
     void saveWindowGeometry(QWidget *widget);
+
+    void loadSplitterState(QSplitter *splitter);
+    void saveSplitterState(QSplitter *splitter);
 
 private:
     QSettings settings;

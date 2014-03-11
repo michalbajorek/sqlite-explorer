@@ -20,13 +20,18 @@ public:
 
     Table* getTable(const QString &tableName) const;
     Table* getTable(int index) const;
+    Table* getMasterTable() const
+        { return masterTable; }
 
 private:
     void load();
     void clear();
     void addTable(const QString &tableName);
+    void loadMasterTable();
+    void loadRestTables();
 
     QMap<QString, Table*> tableMap;
+    Table *masterTable;
 
     friend class Database;
 };

@@ -3,6 +3,8 @@
 #include "Api.h"
 #include "Database.h"
 #include "Query.h"
+#include "QueryLogger.h"
+#include <QDebug>
 
 using namespace sqlite;
 

@@ -7,7 +7,7 @@ using namespace sqlite;
 
 Tables::Tables(Database *database) : Object(database)
 {
-
+    masterTable = NULL;
 }
 
 Tables::~Tables()
@@ -16,6 +16,17 @@ Tables::~Tables()
 }
 
 void Tables::load()
+{
+    loadMasterTable();
+    loadRestTables();
+}
+
+void Tables::loadMasterTable()
+{
+    masterTable = new Table(database, "sqlite_master");
+}
+
+void Tables::loadRestTables()
 {
     RecordSet getTables(database);
     getTables.setQueryText("SELECT name FROM sqlite_master WHERE type = 'table'");
@@ -26,8 +37,15 @@ void Tables::load()
     }
 }
 
+void Tables::addTable(const QString &tableName)
+{
+    Table *table = new Table(database, tableName);
+    tableMap.insert(tableName, table);
+}
+
 void Tables::clear()
 {
+    delete masterTable;
     foreach(auto it, tableMap)
     {
         Table *table = it;
@@ -48,10 +66,4 @@ Table *Tables::getTable(int index) const
 {
     auto iterator = tableMap.begin() + index; // Iterator has operator+
     return iterator.value();
-}
-
-void Tables::addTable(const QString &tableName)
-{
-    Table *table = new Table(database, tableName);
-    tableMap.insert(tableName, table);
 }

@@ -22,41 +22,53 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    ui->tableView->setModel(&model);
+    ui->tableView->setModel(&recordSetModel);
+    ui->treeView->setModel(&databaseModel);
 
+    setSplitterInitialSizes();
     connectSignals();
 
-    globalSettings.loadWindowGeometry(this);
+    loadSettings();
 }
 
 MainWindow::~MainWindow()
 {
-    globalSettings.saveWindowGeometry(this);
+    saveSettings();
     delete ui;
+}
+
+void MainWindow::setSplitterInitialSizes()
+{
+    QList<int> sizes;
+    sizes << 100 << 300;
+    ui->splitter->setSizes(sizes);
 }
 
 void MainWindow::connectSignals()
 {
-    connect(ui->comboTables, SIGNAL(currentIndexChanged(QString)), this, SLOT(loadTable(QString)));
     connect(ui->actionOpenDatabase, &QAction::triggered, this, &MainWindow::buttonOpenClicked);
     connect(ui->actionCloseDatabase, &QAction::triggered, this, &MainWindow::buttonCloseClicked);
-    connect(&database.progressHandler, &sqlite::ProgressHandler::progress, this, &MainWindow::progressHandler);
+    connect(ui->treeView->selectionModel(), &QItemSelectionModel::currentChanged, this, &MainWindow::treeModelCurrentChanged);
 }
 
-void MainWindow::loadTable(QString tableName)
+void MainWindow::loadSettings()
 {
-    if(tableName.isEmpty())
-        return;
-    trySetTableToModel(tableName);
+    globalSettings.loadWindowGeometry(this);
+    globalSettings.loadSplitterState(ui->splitter);
 }
 
-void MainWindow::trySetTableToModel(const QString &tableName)
+void MainWindow::saveSettings()
+{
+    globalSettings.saveWindowGeometry(this);
+    globalSettings.saveSplitterState(ui->splitter);
+}
+
+void MainWindow::trySetTableToModel(sqlite::Table *table)
 try
 {
-    sqlite::Table *table = database.tables.getTable(tableName);
     if(table->isLoaded() == false)
         table->loadContent();
-    model.setRecordSet(table);
+    recordSetModel.setRecordSet(table);
 }
 catch(sqlite::Exception &exception)
 {
@@ -85,34 +97,28 @@ try
     if(database.isOpened())
         database.close();
     database.open(fileName);
-    loadTablesToCombo();
+    databaseModel.setDatabase(&database);
 }
 catch(sqlite::Exception &exception)
 {
     showExceptionMessage(exception);
 }
 
-void MainWindow::loadTablesToCombo()
-{
-    ui->comboTables->clear();
-    for(int i = 0; i < database.tables.getCount(); i++)
-    {
-        sqlite::Table *table = database.tables.getTable(i);
-        ui->comboTables->addItem(table->getName());
-    }
-}
-
 void MainWindow::buttonCloseClicked()
 {
     if(database.isOpened())
     {
-        model.clearRecordSet();
-        ui->comboTables->clear();
+        recordSetModel.clearRecordSet();
+        databaseModel.clearDatabase();
         database.close();
     }
 }
 
-
-void MainWindow::progressHandler(sqlite::Database *, bool &)
+void MainWindow::treeModelCurrentChanged(const QModelIndex &current, const QModelIndex &previous)
 {
+    TreeNode* node = (TreeNode*)current.internalPointer();
+    if(TableNode *tableNode = dynamic_cast<TableNode*>(node))
+        trySetTableToModel(tableNode->getTable());
+    if(DatabaseNode *databaseNode = dynamic_cast<DatabaseNode*>(node))
+        trySetTableToModel(databaseNode->getMasterTable());
 }

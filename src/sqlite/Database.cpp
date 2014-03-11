@@ -24,7 +24,7 @@ void Database::internalOpen(const QString &fileName, OpenMode openMode)
         tables.load();
 }
 
-int Database::getOpenFlags(OpenMode openMode)
+int Database::getOpenFlags(OpenMode openMode) const
 {
     int flags = SQLITE_OPEN_READWRITE;
     if(openMode == OpenMode::Create)

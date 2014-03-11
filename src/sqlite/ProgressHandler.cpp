@@ -44,10 +44,10 @@ void ProgressHandler::removeHandler()
 int ProgressHandler::staticProgressHandler(void *param)
 {
     ProgressHandler *progressHandler = static_cast<ProgressHandler*>(param);
-    return progressHandler->emitSignal();
+    return progressHandler->emitProgressSignal();
 }
 
-bool ProgressHandler::emitSignal()
+bool ProgressHandler::emitProgressSignal()
 {
     bool cancelOperation = false;
     emit progress(database, cancelOperation);

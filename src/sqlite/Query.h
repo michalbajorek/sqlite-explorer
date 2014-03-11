@@ -6,7 +6,6 @@
 #include "Api.h"
 #include "Object.h"
 
-
 namespace sqlite
 {
 
@@ -27,7 +26,7 @@ public:
     bool isActive() const
         { return statement != NULL; }
 
-    bool isDone() const // TODO: Function name isDown is misleading
+    bool isDone() const // TODO: Function name isDone is misleading
         { return !isInProgress; }
 
     int getColumnsCount() const

@@ -6,9 +6,15 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>530</width>
-    <height>426</height>
+    <width>725</width>
+    <height>530</height>
    </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
   </property>
   <property name="windowTitle">
    <string>Sqlite Explorer</string>
@@ -21,35 +27,21 @@ selection-background-color: red;
 }</string>
   </property>
   <widget class="QWidget" name="centralWidget">
-   <layout class="QVBoxLayout" name="verticalLayout">
+   <layout class="QHBoxLayout" name="horizontalLayout">
     <item>
-     <layout class="QHBoxLayout" name="layoutCombo">
-      <property name="topMargin">
-       <number>0</number>
+     <widget class="QSplitter" name="splitter">
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
       </property>
-      <item>
-       <widget class="QLabel" name="label">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="text">
-         <string>Tables:</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QComboBox" name="comboTables"/>
-      </item>
-     </layout>
-    </item>
-    <item>
-     <widget class="QTableView" name="tableView">
-      <property name="gridStyle">
-       <enum>Qt::DotLine</enum>
-      </property>
+      <widget class="QTreeView" name="treeView">
+       <property name="autoScroll">
+        <bool>false</bool>
+       </property>
+       <attribute name="headerVisible">
+        <bool>false</bool>
+       </attribute>
+      </widget>
+      <widget class="QTableView" name="tableView"/>
      </widget>
     </item>
    </layout>
@@ -59,7 +51,7 @@ selection-background-color: red;
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>530</width>
+     <width>725</width>
      <height>20</height>
     </rect>
    </property>

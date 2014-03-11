@@ -2,6 +2,8 @@
 #define GUI_MAIN_WINDOW_H
 
 #include <QMainWindow>
+
+#include "DatabaseTreeModel.h"
 #include "RecordSetModel.h"
 #include "sqlite/Database.h"
 #include "sqlite/ProgressHandler.h"
@@ -19,22 +21,24 @@ public:
     ~MainWindow();
 
 private slots:
-    void loadTable(QString tableName);
     void buttonOpenClicked();
     void buttonCloseClicked();
-    void progressHandler(sqlite::Database *database, bool &cancelOperation);
+    void treeModelCurrentChanged(const QModelIndex &current, const QModelIndex &previous);
 
 private:
     void connectSignals();
-    void trySetTableToModel(const QString &tableName);
+    void setSplitterInitialSizes();
+    void loadSettings();
+    void saveSettings();
+    void trySetTableToModel(sqlite::Table *table);
     void loadTablesToCombo();
     void tryOpenDatabase(QString fileName);
     void showExceptionMessage(sqlite::Exception &exception);
 
     Ui::MainWindow *ui;
-    RecordSetModel model;
+    RecordSetModel recordSetModel;
+    DatabaseTreeModel databaseModel;
     sqlite::Database database;
-
 };
 
 #endif // GUI_MAIN_WINDOW_H

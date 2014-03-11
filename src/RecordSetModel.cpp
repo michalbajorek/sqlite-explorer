@@ -1,14 +1,14 @@
 ﻿#include "RecordSetModel.h"
 
-RecordSetModel::RecordSetModel(sqlite::RecordSet *recordSet)
+RecordSetModel::RecordSetModel()
 {
-    this->recordSet = recordSet;
+    recordSet = NULL;
 }
 
-void RecordSetModel::setRecordSet(sqlite::RecordSet *recordSet)
+void RecordSetModel::setRecordSet(sqlite::RecordSet *newRecordSet)
 {
     beginResetModel();
-    this->recordSet = recordSet;
+    recordSet = newRecordSet;
     endResetModel();
 }
 

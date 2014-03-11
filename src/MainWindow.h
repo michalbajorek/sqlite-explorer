@@ -22,7 +22,7 @@ public:
 
 private slots:
     void buttonOpenClicked();
-    void buttonCloseClicked();
+    void closeDatabase();
     void treeModelCurrentChanged(const QModelIndex &current, const QModelIndex &previous);
 
 private:

@@ -46,8 +46,8 @@ void MainWindow::setSplitterInitialSizes()
 
 void MainWindow::connectSignals()
 {
-    connect(ui->actionOpenDatabase, &QAction::triggered, this, &MainWindow::buttonOpenClicked);
-    connect(ui->actionCloseDatabase, &QAction::triggered, this, &MainWindow::buttonCloseClicked);
+    connect(ui->actionOpenDatabase, &QAction::triggered, this, &MainWindow::openDatabaseWithDialog);
+    connect(ui->actionCloseDatabase, &QAction::triggered, this, &MainWindow::closeDatabase);
     connect(ui->treeView->selectionModel(), &QItemSelectionModel::currentChanged, this, &MainWindow::treeModelCurrentChanged);
 }
 
@@ -80,12 +80,13 @@ void MainWindow::showExceptionMessage(sqlite::Exception &exception)
     QMessageBox::warning(this, "Title", exception.getErrorMessage());
 }
 
-void MainWindow::buttonOpenClicked()
+void MainWindow::openDatabaseWithDialog()
 {
     QFileDialog fileDialog(this);
     fileDialog.setNameFilter("Sqlite database (*.sqlite)");
     if(fileDialog.exec())
     {
+        closeDatabase();
         QString fileName = fileDialog.selectedFiles().first();
         tryOpenDatabase(fileName);
     }
@@ -104,7 +105,7 @@ catch(sqlite::Exception &exception)
     showExceptionMessage(exception);
 }
 
-void MainWindow::buttonCloseClicked()
+void MainWindow::closeDatabase()
 {
     if(database.isOpened())
     {

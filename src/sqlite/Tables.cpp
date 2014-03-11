@@ -12,7 +12,7 @@ Tables::Tables(Database *database) : Object(database)
 
 Tables::~Tables()
 {
-
+    clear();
 }
 
 void Tables::load()
@@ -45,7 +45,18 @@ void Tables::addTable(const QString &tableName)
 
 void Tables::clear()
 {
+    clearMasterTable();
+    clearRestTables();
+}
+
+void Tables::clearMasterTable()
+{
     delete masterTable;
+    masterTable = NULL;
+}
+
+void Tables::clearRestTables()
+{
     foreach(auto it, tableMap)
     {
         Table *table = it;

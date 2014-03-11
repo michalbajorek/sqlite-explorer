@@ -29,6 +29,8 @@ private:
     void addTable(const QString &tableName);
     void loadMasterTable();
     void loadRestTables();
+    void clearMasterTable();
+    void clearRestTables();
 
     QMap<QString, Table*> tableMap;
     Table *masterTable;

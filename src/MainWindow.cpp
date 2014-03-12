@@ -23,7 +23,7 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
     ui->tableView->setModel(&recordSetModel);
-    ui->treeView->setModel(&databaseModel);
+    ui->treeView->setModel(databaseList.getModel());
 
     setSplitterInitialSizes();
     connectSignals();
@@ -47,7 +47,7 @@ void MainWindow::setSplitterInitialSizes()
 void MainWindow::connectSignals()
 {
     connect(ui->actionOpenDatabase, &QAction::triggered, this, &MainWindow::openDatabaseWithDialog);
-    connect(ui->actionCloseDatabase, &QAction::triggered, this, &MainWindow::closeDatabase);
+    connect(ui->actionCloseDatabase, &QAction::triggered, this, &MainWindow::closeSelectedDatabase);
     connect(ui->treeView->selectionModel(), &QItemSelectionModel::currentChanged, this, &MainWindow::treeModelCurrentChanged);
 }
 
@@ -84,40 +84,35 @@ void MainWindow::openDatabaseWithDialog()
 {
     QFileDialog fileDialog(this);
     fileDialog.setNameFilter("Sqlite database (*.sqlite)");
+    fileDialog.setFileMode(QFileDialog::ExistingFiles);
     if(fileDialog.exec())
-    {
-        closeDatabase();
-        QString fileName = fileDialog.selectedFiles().first();
-        tryOpenDatabase(fileName);
-    }
+        tryOpenDatabases(fileDialog.selectedFiles());
 }
 
-void MainWindow::tryOpenDatabase(QString fileName)
+void MainWindow::tryOpenDatabases(const QStringList &fileNames)
 try
 {
-    if(database.isOpened())
-        database.close();
-    database.open(fileName);
-    databaseModel.setDatabase(&database);
+    foreach(QString fileName, fileNames)
+        databaseList.addAndOpenDatabase(fileName);
 }
 catch(sqlite::Exception &exception)
 {
     showExceptionMessage(exception);
 }
 
-void MainWindow::closeDatabase()
+void MainWindow::closeSelectedDatabase()
 {
-    if(database.isOpened())
-    {
-        recordSetModel.clearRecordSet();
-        databaseModel.clearDatabase();
-        database.close();
-    }
+//    if(database.isOpened())
+//    {
+//        recordSetModel.clearRecordSet();
+//        databaseModel.clearDatabase();
+//        database.close();
+//    }
 }
 
-void MainWindow::treeModelCurrentChanged(const QModelIndex &current, const QModelIndex &previous)
+void MainWindow::treeModelCurrentChanged(const QModelIndex &current, const QModelIndex &)
 {
-    TreeNode* node = (TreeNode*)current.internalPointer();
+    TreeNode *node = (TreeNode*)current.internalPointer();
     if(TableNode *tableNode = dynamic_cast<TableNode*>(node))
         trySetTableToModel(tableNode->getTable());
     if(DatabaseNode *databaseNode = dynamic_cast<DatabaseNode*>(node))

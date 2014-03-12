@@ -3,62 +3,104 @@
 
 DatabaseTreeModel::DatabaseTreeModel()
 {
-    database = NULL;
 }
 
-void DatabaseTreeModel::setDatabase(sqlite::Database *newDatabase)
+DatabaseTreeModel::~DatabaseTreeModel()
+{
+
+}
+
+void DatabaseTreeModel::addDatabase(sqlite::Database *database)
 {
     beginResetModel();
-    database = newDatabase;
-    deleteTree();
-    if(database)
-        createTree();
+    addDatabaseNode(database);
     endResetModel();
+}
+
+void DatabaseTreeModel::addDatabaseNode(sqlite::Database *database)
+{
+    DatabaseNode *databaseNode = createDatabaseTree(database);
+    databaseNodeList.append(databaseNode);
+}
+
+DatabaseNode* DatabaseTreeModel::createDatabaseTree(sqlite::Database *database)
+{
+    DatabaseNode *databaseNode = new DatabaseNode(database);
+    databaseNode->createChildren();
+    return databaseNode;
+}
+
+void DatabaseTreeModel::removeDatabase(sqlite::Database *database)
+{
+    beginResetModel();
+    removeDatabaseNode(database);
+    endResetModel();
+}
+
+void DatabaseTreeModel::removeDatabaseNode(sqlite::Database *database)
+{
+    DatabaseNode *databaseNode = findDatabaseNode(database);
+    delete databaseNode;
+}
+
+DatabaseNode *DatabaseTreeModel::findDatabaseNode(sqlite::Database *database)
+{
+    foreach(DatabaseNode *node, databaseNodeList)
+        if(node->getDatabase() == database)
+            return node;
+    throw sqlite::Exception("Database not found in tree");
 }
 
 QModelIndex DatabaseTreeModel::index(int row, int column, const QModelIndex &parent) const
 {
-//     if (!hasIndex(row, column, parent))
-//         return QModelIndex();
-
-     const TreeNode *parentItem;
-
-     if (!parent.isValid())
-         parentItem = &rootNode;
-     else
-         parentItem = static_cast<TreeNode*>(parent.internalPointer());
-    if(parentItem == NULL)
+    if(parent.isValid())
+    {
+        TreeNode *parentNode = (TreeNode*)parent.internalPointer();
+        return createIndex(row, column, parentNode->getChild(row));
+    }
+    else if(row < databaseNodeList.count())
+    {
+        TreeNode *childNode = databaseNodeList.at(row);
+        return createIndex(row, column, childNode);
+    }
+    else
+    {
         return QModelIndex();
-
-     TreeNode *childItem = parentItem->getChild(row);
-     if (childItem)
-         return createIndex(row, column, childItem);
-     else
-         return QModelIndex();
+    }
 }
 
 QModelIndex DatabaseTreeModel::parent(const QModelIndex &child) const
 {
-     if (!child.isValid())
-         return QModelIndex();
-
-     TreeNode *childItem = static_cast<TreeNode*>(child.internalPointer());
-     TreeNode *parentItem = childItem->getParent();
-
-     return createIndex(parentItem ? parentItem->getRow() : 0, 0, parentItem);
+    if(child.isValid())
+    {
+        TreeNode *childNode = (TreeNode*)child.internalPointer();
+        TreeNode *parentNode = childNode->getParent();
+        if(parentNode)
+            return createIndex(parentNode->getParentIndex(), 0, parentNode);
+        else
+            return QModelIndex();
+    }
+    else
+    {
+        return QModelIndex();
+    }
 }
 
 int DatabaseTreeModel::rowCount(const QModelIndex &parent) const
 {
-     const TreeNode *parentItem;
+    if(parent.isValid())
+    {
+        TreeNode *parentNode = (TreeNode*)parent.internalPointer();
+        if(parentNode)
+            return parentNode->getChildCount();
+        else
+            return 0;
+    }
+    else
+    {
+        return databaseNodeList.count();
+    }
 
-     if (!parent.isValid())
-         parentItem = &rootNode;
-     else
-         parentItem = (TreeNode*)parent.internalPointer();
-    if(parentItem)
-        return parentItem->getChildCount();
-    return 0;
 }
 
 int DatabaseTreeModel::columnCount(const QModelIndex&) const
@@ -82,31 +124,3 @@ QVariant DatabaseTreeModel::data(const QModelIndex &index, int role) const
     }
     return QVariant();
 }
-
-void DatabaseTreeModel::createTree()
-{
-    DatabaseNode *databaseNode = new DatabaseNode(database);
-    rootNode.addChild(databaseNode);
-    for(int i = 0; i < database->tables.getCount(); i++)
-    {
-        sqlite::Table *table = database->tables.getTable(i);
-        TableNode *tableNode = new TableNode(table);
-        databaseNode->addChild(tableNode);
-    }
-}
-
-void DatabaseTreeModel::deleteTree()
-{
-    rootNode.deleteChildren();
-}
-
-//bool DatabaseTreeModel::hasChildren(const QModelIndex &parent) const
-//{
-//    if(parent.isValid())
-//    {
-//        TreeNode *node = (TreeNode*)parent.internalPointer();
-//        if(node)
-//            return node->getChildCount();
-//    }
-//    return false;
-//}

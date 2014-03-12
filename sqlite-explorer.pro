@@ -42,7 +42,9 @@ SOURCES += \
     src/RecordSetModel.cpp \
     src/Settings.cpp \
     src/sqlite/QueryLogger.cpp \
-    src/DatabaseTreeModel.cpp
+    src/DatabaseTreeModel.cpp \
+    src/DatabaseTree.cpp \
+    src/DatabaseList.cpp
 
 
 HEADERS  += \
@@ -63,7 +65,9 @@ HEADERS  += \
     src/RecordSetModel.h \
     src/Settings.h \
     src/sqlite/QueryLogger.h \
-    src/DatabaseTreeModel.h
+    src/DatabaseTreeModel.h \
+    src/DatabaseTree.h \
+    src/DatabaseList.h
 
 FORMS    += \
     forms/MainWindow.ui

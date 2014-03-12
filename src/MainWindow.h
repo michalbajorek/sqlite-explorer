@@ -2,7 +2,9 @@
 #define GUI_MAIN_WINDOW_H
 
 #include <QMainWindow>
+#include <QList>
 
+#include "DatabaseList.h"
 #include "DatabaseTreeModel.h"
 #include "RecordSetModel.h"
 #include "sqlite/Database.h"
@@ -21,8 +23,8 @@ public:
     ~MainWindow();
 
 private slots:
-    void buttonOpenClicked();
-    void closeDatabase();
+    void openDatabaseWithDialog();
+    void closeSelectedDatabase();
     void treeModelCurrentChanged(const QModelIndex &current, const QModelIndex &previous);
 
 private:
@@ -32,13 +34,13 @@ private:
     void saveSettings();
     void trySetTableToModel(sqlite::Table *table);
     void loadTablesToCombo();
-    void tryOpenDatabase(QString fileName);
+    void tryOpenDatabases(const QStringList &fileNames);
     void showExceptionMessage(sqlite::Exception &exception);
 
     Ui::MainWindow *ui;
     RecordSetModel recordSetModel;
     DatabaseTreeModel databaseModel;
-    sqlite::Database database;
+    DatabaseList databaseList;
 };
 
 #endif // GUI_MAIN_WINDOW_H

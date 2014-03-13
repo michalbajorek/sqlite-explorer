@@ -10,17 +10,31 @@ DatabaseTreeModel::~DatabaseTreeModel()
 
 }
 
-void DatabaseTreeModel::addDatabase(sqlite::Database *database)
+void DatabaseTreeModel::setDatabaseHash(DatabaseHash &databaseHash)
 {
     beginResetModel();
-    addDatabaseNode(database);
+    deleteDatabaseNodeList();
+    createDatabaseNodeList(databaseHash);
     endResetModel();
+}
+
+void DatabaseTreeModel::deleteDatabaseNodeList()
+{
+    foreach(DatabaseNode *node, databaseNodeList)
+        delete node;
+    databaseNodeList.clear();
+}
+
+void DatabaseTreeModel::createDatabaseNodeList(DatabaseHash &databaseHash)
+{
+    foreach(sqlite::Database *database, databaseHash)
+        addDatabaseNode(database);
 }
 
 void DatabaseTreeModel::addDatabaseNode(sqlite::Database *database)
 {
-    DatabaseNode *databaseNode = createDatabaseTree(database);
-    databaseNodeList.append(databaseNode);
+    DatabaseNode *databaseRoot = createDatabaseTree(database);
+    databaseNodeList.append(databaseRoot);
 }
 
 DatabaseNode* DatabaseTreeModel::createDatabaseTree(sqlite::Database *database)
@@ -28,13 +42,6 @@ DatabaseNode* DatabaseTreeModel::createDatabaseTree(sqlite::Database *database)
     DatabaseNode *databaseNode = new DatabaseNode(database);
     databaseNode->createChildren();
     return databaseNode;
-}
-
-void DatabaseTreeModel::removeDatabase(sqlite::Database *database)
-{
-    beginResetModel();
-    removeDatabaseNode(database);
-    endResetModel();
 }
 
 void DatabaseTreeModel::removeDatabaseNode(sqlite::Database *database)
@@ -105,7 +112,7 @@ int DatabaseTreeModel::rowCount(const QModelIndex &parent) const
 
 int DatabaseTreeModel::columnCount(const QModelIndex&) const
 {
-    return 1;
+    return 2;
 }
 
 QVariant DatabaseTreeModel::data(const QModelIndex &index, int role) const
@@ -117,7 +124,7 @@ QVariant DatabaseTreeModel::data(const QModelIndex &index, int role) const
     case Qt::DisplayRole:
         {
         TreeNode *node = static_cast<TreeNode*>(index.internalPointer());
-        return node->getText();
+        return node->getText(index.column());
         }
     default:
         break;

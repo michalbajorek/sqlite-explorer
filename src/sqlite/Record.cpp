@@ -27,10 +27,10 @@ void RecordBuffer::reset()
     loadedCount = 0;
 }
 
-void RecordBuffer::loadRecordsFromQuery(int startIndex, Query &query)
+void RecordBuffer::loadRecordsFromQuery(int fromIndex, Query &query)
 {
-    this->startIndex = startIndex;
-    this->loadedCount = 0;
+    startIndex = fromIndex;
+    loadedCount = 0;
     while(hasEmptySpace())
     {
         if(query.step())

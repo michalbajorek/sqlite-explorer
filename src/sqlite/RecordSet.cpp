@@ -35,7 +35,7 @@ void RecordSet::setQueryText(const QString &queryText)
 
 int RecordSet::getRecordsCount() const
 {
-    checkIsLoaded();
+//    checkIsLoaded();
     return recordsCount;
 }
 

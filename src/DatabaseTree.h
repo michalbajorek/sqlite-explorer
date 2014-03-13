@@ -17,7 +17,7 @@ public:
     int getChildCount() const;
     int getParentIndex() const;
     TreeNode *getParent() const;
-    virtual QString getText() const;
+    virtual QString getText(int column) const;
 
 private:
     void setParent(TreeNode *newParent);
@@ -34,7 +34,7 @@ public:
     DatabaseNode(sqlite::Database *database)
         { this->database = database; }
 
-    virtual QString getText() const;
+    virtual QString getText(int column) const;
 
     sqlite::Database *getDatabase()
         { return database; }
@@ -57,8 +57,7 @@ public:
     TableNode(sqlite::Table *table)
         { this->table = table; }
 
-    virtual QString getText() const
-        { return table->getName();  }
+    virtual QString getText(int column) const;
 
     sqlite::Table *getTable()
         { return table; }

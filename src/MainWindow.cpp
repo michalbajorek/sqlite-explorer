@@ -24,6 +24,8 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
     ui->tableView->setModel(&recordSetModel);
     ui->treeView->setModel(databaseList.getModel());
+    ui->treeView->setSelectionMode(QTreeView::ExtendedSelection);
+    ui->treeView->setSelectionBehavior(QTreeView::SelectRows);
 
     setSplitterInitialSizes();
     connectSignals();
@@ -92,8 +94,11 @@ void MainWindow::openDatabaseWithDialog()
 void MainWindow::tryOpenDatabases(const QStringList &fileNames)
 try
 {
+    databaseList.beginUpdate();
     foreach(QString fileName, fileNames)
-        databaseList.addAndOpenDatabase(fileName);
+        databaseList.addDatabase(fileName);
+    databaseList.endUpdate();
+    ui->treeView->expandAll();
 }
 catch(sqlite::Exception &exception)
 {
@@ -101,13 +106,38 @@ catch(sqlite::Exception &exception)
 }
 
 void MainWindow::closeSelectedDatabase()
+try
 {
-//    if(database.isOpened())
-//    {
-//        recordSetModel.clearRecordSet();
-//        databaseModel.clearDatabase();
-//        database.close();
-//    }
+    recordSetModel.setRecordSet(NULL);
+    QSet<QString> fileNames;
+    getSelectedDatabaseFileNames(fileNames);
+    closeDatabasesFromFileNameList(fileNames);
+}
+catch(sqlite::Exception &exception)
+{
+    showExceptionMessage(exception);
+}
+
+void MainWindow::getSelectedDatabaseFileNames(QSet<QString> &fileNames)
+{
+    QModelIndexList selectedIndexes = ui->treeView->selectionModel()->selectedIndexes();
+    foreach(QModelIndex index, selectedIndexes)
+    {
+        TreeNode *node = (TreeNode*)index.internalPointer();
+        if(TableNode *tableNode = dynamic_cast<TableNode*>(node))
+            node = tableNode->getParent();
+        if(DatabaseNode *databaseNode = dynamic_cast<DatabaseNode*>(node))
+            fileNames.insert(databaseNode->getDatabase()->getFileName());
+    }
+}
+
+void MainWindow::closeDatabasesFromFileNameList(QSet<QString> &fileNames)
+{
+    databaseList.beginUpdate();
+    foreach(QString fileName, fileNames)
+        databaseList.removeDatabase(fileName);
+    databaseList.endUpdate();
+    ui->treeView->expandAll();
 }
 
 void MainWindow::treeModelCurrentChanged(const QModelIndex &current, const QModelIndex &)

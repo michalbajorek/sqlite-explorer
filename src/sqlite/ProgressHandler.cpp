@@ -6,7 +6,7 @@ using namespace sqlite;
 
 ProgressHandler::ProgressHandler(Database *database) : Object(database)
 {
-    operationInterval = 10;
+    operationInterval = 50;
     enabled = false;
 }
 
@@ -25,9 +25,9 @@ void ProgressHandler::setEnabled(bool newEnabled)
         removeHandler();
 }
 
-void ProgressHandler::setOperationInterval(int operationInterval)
+void ProgressHandler::setOperationInterval(int newOperationInterval)
 {
-    this->operationInterval = operationInterval;
+    operationInterval = newOperationInterval;
     setHandler();
 }
 

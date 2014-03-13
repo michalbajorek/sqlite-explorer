@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 #include <QList>
+#include <QSet>
 
 #include "DatabaseList.h"
 #include "DatabaseTreeModel.h"
@@ -22,6 +23,7 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
+    void closeDatabasesFromFileNameList(QSet<QString> &fileNames);
 private slots:
     void openDatabaseWithDialog();
     void closeSelectedDatabase();
@@ -36,6 +38,7 @@ private:
     void loadTablesToCombo();
     void tryOpenDatabases(const QStringList &fileNames);
     void showExceptionMessage(sqlite::Exception &exception);
+    void getSelectedDatabaseFileNames(QSet<QString> &fileNames);
 
     Ui::MainWindow *ui;
     RecordSetModel recordSetModel;

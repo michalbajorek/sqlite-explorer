@@ -38,7 +38,10 @@ selection-background-color: red;
         <bool>false</bool>
        </property>
        <attribute name="headerVisible">
-        <bool>false</bool>
+        <bool>true</bool>
+       </attribute>
+       <attribute name="headerDefaultSectionSize">
+        <number>200</number>
        </attribute>
       </widget>
       <widget class="QTableView" name="tableView"/>

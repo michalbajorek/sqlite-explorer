@@ -3,9 +3,12 @@
 
 #include <QAbstractItemModel>
 #include <QList>
+#include <QHash>
 
 #include "DatabaseTree.h"
 #include "sqlite/Database.h"
+
+typedef QHash<QString, sqlite::Database*> DatabaseHash;
 
 class DatabaseTreeModel : public QAbstractItemModel
 {
@@ -13,8 +16,7 @@ public:
     DatabaseTreeModel();
     virtual ~DatabaseTreeModel();
 
-    void addDatabase(sqlite::Database *database);
-    void removeDatabase(sqlite::Database *database);
+    void setDatabaseHash(DatabaseHash &databaseHash);
 
 private:
     virtual int rowCount(const QModelIndex &parent) const;
@@ -27,6 +29,9 @@ private:
     void removeDatabaseNode(sqlite::Database *database);
     DatabaseNode *createDatabaseTree(sqlite::Database *database);
     DatabaseNode *findDatabaseNode(sqlite::Database *database);
+    void createDatabaseNodeList(DatabaseHash &databaseHash);
+    void deleteDatabaseNodeList();
+
 
     QList<DatabaseNode*> databaseNodeList;
 };

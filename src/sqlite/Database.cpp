@@ -6,7 +6,7 @@ using namespace sqlite;
 
 Database::Database() : progressHandler(this), tables(this)
 {
-    this->handle = NULL;
+    handle = NULL;
 }
 
 Database::~Database()
@@ -36,7 +36,7 @@ void Database::close()
 {
     checkIsOpened();
     tables.clear();
-    Api::close(getHandle());
+    Api::close(handle);
     handle = NULL;
 }
 

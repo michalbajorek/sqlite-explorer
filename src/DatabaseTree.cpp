@@ -32,7 +32,7 @@ void TreeNode::setParent(TreeNode *newParent)
     parentIndex = newParent->children.count() - 1;
 }
 
-QString TreeNode::getText() const
+QString TreeNode::getText(int) const
 {
     return QString();
 }
@@ -65,14 +65,34 @@ void DatabaseNode::addTableNode(sqlite::Table *table)
     addChild(tableNode);
 }
 
-QString DatabaseNode::getText() const
+QString DatabaseNode::getText(int column) const
 {
-    QFileInfo fileInfo(database->getFileName());
-    return fileInfo.fileName();
+    if(column == 0)
+    {
+        QFileInfo fileInfo(database->getFileName());
+        return fileInfo.fileName();
+    }
+    else
+        return QString();
 }
 
 void DatabaseNode::createChildren()
 {
     for(int i = 0; i < database->tables.getCount(); i++)
         addTableNode(database->tables.getTable(i));
+}
+
+
+QString TableNode::getText(int column) const
+{
+    if(column == 0)
+        return table->getName();
+    else
+    {
+        int recordsCount = table->getRecordsCount();
+        if(recordsCount != 0)
+            return QString::number(recordsCount);
+        else
+            return QString();
+    }
 }

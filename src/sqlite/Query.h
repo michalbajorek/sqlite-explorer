@@ -24,7 +24,7 @@ public:
     void finalize();
 
     bool isActive() const
-        { return statement != NULL; }
+        { return statement != nullptr; }
 
     bool isDone() const // TODO: Function name isDone is misleading
         { return !isInProgress; }

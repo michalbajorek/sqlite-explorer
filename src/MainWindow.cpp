@@ -1,35 +1,26 @@
 ﻿#include <QMessageBox>
-#include <QTextCodec>
 #include <QAbstractTableModel>
 #include <QFileDialog>
-#include <QSettings>
 
 #include "MainWindow.h"
 #include "Settings.h"
+#include "common/Exception.h"
 #include "sqlite/Database.h"
-#include "sqlite/Exception.h"
 #include "sqlite/Object.h"
 #include "sqlite/RecordSet.h"
 #include "sqlite/Query.h"
 #include "sqlite/Table.h"
+#include "tree/DatabaseNode.h"
+#include "tree/TableNode.h"
 
 #include "ui_MainWindow.h"
-
-QSettings settings;
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
-    ui->setupUi(this);
-    ui->tableView->setModel(&recordSetModel);
-    ui->treeView->setModel(databaseList.getModel());
-    ui->treeView->setSelectionMode(QTreeView::ExtendedSelection);
-    ui->treeView->setSelectionBehavior(QTreeView::SelectRows);
-
-    setSplitterInitialSizes();
+    setupUi();
     connectSignals();
-
     loadSettings();
 }
 
@@ -37,6 +28,21 @@ MainWindow::~MainWindow()
 {
     saveSettings();
     delete ui;
+}
+
+void MainWindow::setupUi()
+{
+    ui->setupUi(this);
+    setupModels();
+    setSplitterInitialSizes();
+}
+
+void MainWindow::setupModels()
+{
+    ui->tableView->setModel(&recordSetModel);
+    ui->treeView->setModel(databaseList.getModel());
+    ui->treeView->setSelectionMode(QTreeView::ExtendedSelection);
+    ui->treeView->setSelectionBehavior(QTreeView::SelectRows);
 }
 
 void MainWindow::setSplitterInitialSizes()
@@ -72,12 +78,12 @@ try
         table->loadContent();
     recordSetModel.setRecordSet(table);
 }
-catch(sqlite::Exception &exception)
+catch(common::Exception &exception)
 {
     showExceptionMessage(exception);
 }
 
-void MainWindow::showExceptionMessage(sqlite::Exception &exception)
+void MainWindow::showExceptionMessage(common::Exception &exception)
 {
     QMessageBox::warning(this, "Title", exception.getErrorMessage());
 }
@@ -100,7 +106,7 @@ try
     databaseList.endUpdate();
     ui->treeView->expandAll();
 }
-catch(sqlite::Exception &exception)
+catch(common::Exception &exception)
 {
     showExceptionMessage(exception);
 }
@@ -108,43 +114,41 @@ catch(sqlite::Exception &exception)
 void MainWindow::closeSelectedDatabase()
 try
 {
-    recordSetModel.setRecordSet(NULL);
-    QSet<QString> fileNames;
-    getSelectedDatabaseFileNames(fileNames);
-    closeDatabasesFromFileNameList(fileNames);
+    recordSetModel.clearRecordSet();
+    QSet<sqlite::Database*> databaseSet;
+    getSelectedDatabases(databaseSet);
+    closeDatabases(databaseSet);
 }
-catch(sqlite::Exception &exception)
+catch(common::Exception &exception)
 {
     showExceptionMessage(exception);
 }
 
-void MainWindow::getSelectedDatabaseFileNames(QSet<QString> &fileNames)
+void MainWindow::getSelectedDatabases(QSet<sqlite::Database*> &databaseSet)
 {
     QModelIndexList selectedIndexes = ui->treeView->selectionModel()->selectedIndexes();
     foreach(QModelIndex index, selectedIndexes)
     {
-        TreeNode *node = (TreeNode*)index.internalPointer();
-        if(TableNode *tableNode = dynamic_cast<TableNode*>(node))
-            node = tableNode->getParent();
-        if(DatabaseNode *databaseNode = dynamic_cast<DatabaseNode*>(node))
-            fileNames.insert(databaseNode->getDatabase()->getFileName());
+        tree::DatabaseNode *node = nullptr;
+        if(index.parent().isValid())
+            node = static_cast<tree::DatabaseNode*>(index.parent().internalPointer());
+        else
+            node = static_cast<tree::DatabaseNode*>(index.internalPointer());
+        databaseSet.insert(node->getDatabase());
     }
 }
 
-void MainWindow::closeDatabasesFromFileNameList(QSet<QString> &fileNames)
+void MainWindow::closeDatabases(QSet<sqlite::Database*> &databaseSet)
 {
     databaseList.beginUpdate();
-    foreach(QString fileName, fileNames)
-        databaseList.removeDatabase(fileName);
+    foreach(sqlite::Database *database, databaseSet)
+        databaseList.removeDatabase(database);
     databaseList.endUpdate();
     ui->treeView->expandAll();
 }
 
 void MainWindow::treeModelCurrentChanged(const QModelIndex &current, const QModelIndex &)
 {
-    TreeNode *node = (TreeNode*)current.internalPointer();
-    if(TableNode *tableNode = dynamic_cast<TableNode*>(node))
-        trySetTableToModel(tableNode->getTable());
-    if(DatabaseNode *databaseNode = dynamic_cast<DatabaseNode*>(node))
-        trySetTableToModel(databaseNode->getMasterTable());
+    tree::TableNode *node = static_cast<tree::TableNode*>(current.internalPointer());
+    trySetTableToModel(node->getTable());
 }

@@ -3,5 +3,8 @@
         <file>icons/32/addDatabase.png</file>
         <file>icons/32/removDatabase.png</file>
     </qresource>
-    <qresource prefix="/Icons/16"/>
+    <qresource prefix="/Icons/16">
+        <file alias="tableIcon">icons/16/table.png</file>
+        <file alias="databaseIcon">icons/16/database.png</file>
+    </qresource>
 </RCC>

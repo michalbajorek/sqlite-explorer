@@ -3,8 +3,8 @@
 #include <algorithm>
 
 #include "Database.h"
-#include "Exception.h"
 #include "RecordSet.h"
+#include "../common/Exception.h"
 
 using namespace sqlite;
 
@@ -16,8 +16,8 @@ RecordSet::RecordSet(Database *database) : Object(database), mainQuery(database)
 void RecordSet::init()
 {
     recordsCount = 0;
-    firstBuffer = NULL;
-    secondBuffer = NULL;
+    firstBuffer = nullptr;
+    secondBuffer = nullptr;
     busy = false;
 }
 
@@ -35,13 +35,13 @@ void RecordSet::setQueryText(const QString &queryText)
 
 int RecordSet::getRecordsCount() const
 {
-//    checkIsLoaded();
+    checkIsLoaded();
     return recordsCount;
 }
 
 void RecordSet::prepareRecords()
 {
-    if(firstBuffer == NULL || secondBuffer == NULL)
+    if(firstBuffer == nullptr || secondBuffer == nullptr)
         allocateRecordBuffers();
     resetRecordBuffers();
     if(executeCountQuery())
@@ -77,14 +77,14 @@ QString RecordSet::getCountQueryText()
     checkQueryIsSelect();
     int fromClauseIndex = queryText.indexOf("FROM", Qt::CaseInsensitive);
     if(fromClauseIndex == -1)
-        throw Exception("Missing FROM clause");
+        throw common::Exception("Missing FROM clause");
     return "SELECT COUNT(*) " + queryText.right(queryText.length() - fromClauseIndex);
 }
 
 void RecordSet::checkQueryIsSelect() const
 {
     if(queryText.startsWith("SELECT", Qt::CaseInsensitive) == false)
-        throw Exception("Not a SELECT statement");
+        throw common::Exception("Not a SELECT statement");
 }
 
 QString RecordSet::getMainQueryText()
@@ -134,7 +134,7 @@ const Record &RecordSet::getRecord(int recordIndex)
 void RecordSet::loadRecordBuffers(int startIndex, bool loadFirstBuffer, bool loadSecondBuffer)
 {
     if(isBusy())
-        throw Exception("Can not load records. Database is busy");
+        throw common::Exception("Can not load records. Database is busy");
     busy = true;
     mainQuery.bindInteger(1, startIndex);
     if(loadFirstBuffer)
@@ -152,12 +152,12 @@ void RecordSet::checkIndexOutOfRange(int recordIndex) const
 {
     checkIsLoaded();
     if(recordIndex < 0 || recordIndex >= recordsCount)
-        throw Exception("Index out of range");
+        throw common::Exception("Index out of range");
 
 }
 
 void RecordSet::checkIsLoaded() const
 {
     if(mainQuery.isActive() == false)
-        throw Exception("Recordset is not loaded");
+        throw common::Exception("Recordset is not loaded");
 }

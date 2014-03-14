@@ -1,4 +1,5 @@
 ﻿#include "DatabaseList.h"
+#include "sqlite/DatabaseRepository.h"
 #include "sqlite/Database.h"
 
 
@@ -9,49 +10,36 @@ DatabaseList::DatabaseList()
 
 DatabaseList::~DatabaseList()
 {
+    removeAllDatabases();
+}
 
+void DatabaseList::removeAllDatabases()
+{
+    foreach(sqlite::Database *database, databaseList)
+        delete database;
+    databaseList.clear();
 }
 
 void DatabaseList::addDatabase(const QString &fileName)
 {
-    if(isDatabaseOpened(fileName))
+    if(sqlite::DatabaseRepository::isOpened(fileName))
         return;
-    sqlite::Database *database = createAndOpenDatabase(fileName);
-    databaseHash.insert(fileName, database);
+    sqlite::Database *database = sqlite::DatabaseRepository::get(fileName);
+    databaseList.append(database);
     updateModel();
-}
-
-bool DatabaseList::isDatabaseOpened(const QString &fileName)
-{
-    return databaseHash.contains(fileName);
-}
-
-sqlite::Database * DatabaseList::createAndOpenDatabase(const QString &fileName)
-{
-    sqlite::Database *database = new sqlite::Database;
-    database->open(fileName);
-    return database;
 }
 
 void DatabaseList::updateModel()
 {
     if(isUpdating == false)
-        model.setDatabaseHash(databaseHash);
+        model.setDatabaseList(databaseList);
 }
 
-void DatabaseList::removeDatabase(const QString &fileName)
+void DatabaseList::removeDatabase(sqlite::Database *database)
 {
-    if(isDatabaseOpened(fileName) == false)
-        throw sqlite::Exception("Database is not opened");
-    closeAndDeleteDatabase(fileName);
-    databaseHash.remove(fileName);
+    databaseList.removeOne(database);
+    sqlite::DatabaseRepository::release(database);
     updateModel();
-}
-
-void DatabaseList::closeAndDeleteDatabase(const QString &fileName)
-{
-    sqlite::Database *database = databaseHash[fileName];
-    delete database;
 }
 
 void DatabaseList::beginUpdate()

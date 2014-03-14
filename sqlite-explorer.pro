@@ -28,7 +28,6 @@ SOURCES += \
     src/sqlite/Api.cpp \
     src/sqlite/Database.cpp \
     src/sqlite/Object.cpp \
-    src/sqlite/Exception.cpp \
     src/sqlite/ProgressHandler.cpp \
     src/sqlite/Query.cpp \
     src/sqlite/Record.cpp \
@@ -43,15 +42,17 @@ SOURCES += \
     src/Settings.cpp \
     src/sqlite/QueryLogger.cpp \
     src/DatabaseTreeModel.cpp \
-    src/DatabaseTree.cpp \
-    src/DatabaseList.cpp
+    src/DatabaseList.cpp \
+    src/sqlite/DatabaseRepository.cpp \
+    src/tree/Node.cpp \
+    src/tree/DatabaseNode.cpp \
+    src/tree/TableNode.cpp
 
 
 HEADERS  += \
     src/sqlite/sqlite3.h \
     src/sqlite/Api.h \
     src/sqlite/Database.h \
-    src/sqlite/Exception.h \
     src/sqlite/Object.h \
     src/sqlite/ProgressHandler.h \
     src/sqlite/Query.h \
@@ -66,8 +67,12 @@ HEADERS  += \
     src/Settings.h \
     src/sqlite/QueryLogger.h \
     src/DatabaseTreeModel.h \
-    src/DatabaseTree.h \
-    src/DatabaseList.h
+    src/DatabaseList.h \
+    src/sqlite/DatabaseRepository.h \
+    src/tree/Node.h \
+    src/tree/DatabaseNode.h \
+    src/tree/TableNode.h \
+    src/common/Exception.h
 
 FORMS    += \
     forms/MainWindow.ui

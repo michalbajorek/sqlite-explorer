@@ -38,7 +38,7 @@ void ProgressHandler::setHandler()
 
 void ProgressHandler::removeHandler()
 {
-    Api::progressHandler(database->getHandle(), 0, NULL, NULL);
+    Api::progressHandler(database->getHandle(), 0, nullptr, nullptr);
 }
 
 int ProgressHandler::staticProgressHandler(void *param)

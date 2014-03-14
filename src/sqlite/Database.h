@@ -4,11 +4,11 @@
 #include <QString>
 
 #include "Api.h"
-#include "Exception.h"
 #include "Object.h"
 #include "ProgressHandler.h"
 #include "sqlite3.h"
 #include "Tables.h"
+#include "../common/Exception.h"
 
 namespace sqlite
 {
@@ -30,7 +30,7 @@ public:
     void close();
 
     bool isOpened() const
-        { return handle != NULL; }
+        { return handle != nullptr; }
 
     sqlite3* getHandle() const
     {

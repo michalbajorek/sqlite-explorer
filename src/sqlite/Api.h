@@ -4,7 +4,7 @@
 #include <QString>
 
 #include "sqlite3.h"
-#include "Exception.h"
+#include "../common/Exception.h"
 
 namespace sqlite
 {
@@ -15,7 +15,7 @@ public:
     static sqlite3* open(const QString &fileName, int flags)
     {
         sqlite3 *handle;
-        int result = sqlite3_open_v2(fileName.toUtf8(), &handle, flags, NULL);
+        int result = sqlite3_open_v2(fileName.toUtf8(), &handle, flags, nullptr);
         if(isError(result))
         {
             sqlite3_close(handle);
@@ -33,7 +33,7 @@ public:
 
     static void exec(sqlite3 *handle, const QString &query)
     {
-        int result = sqlite3_exec(handle, query.toUtf8(), NULL, NULL, NULL);
+        int result = sqlite3_exec(handle, query.toUtf8(), nullptr, nullptr, nullptr);
         if(isError(result))
             throwException(result);
     }
@@ -41,7 +41,7 @@ public:
     static sqlite3_stmt* prepare(sqlite3 *handle, const QString &query)
     {
         sqlite3_stmt *statement;
-        int result = sqlite3_prepare_v2(handle, query.toUtf8(), -1, &statement, NULL);
+        int result = sqlite3_prepare_v2(handle, query.toUtf8(), -1, &statement, nullptr);
         if(isError(result))
             throwException(result);
         return statement;
@@ -94,7 +94,7 @@ public:
 
     static void bindText(sqlite3_stmt *statement, int param, const QString &value)
     {
-        int result = sqlite3_bind_text(statement, param, value.toUtf8(), -1, NULL);
+        int result = sqlite3_bind_text(statement, param, value.toUtf8(), -1, nullptr);
         if(isError(result))
             throwException(result);
     }
@@ -147,7 +147,7 @@ public:
 private:
     static void throwException(int result)
     {
-        throw Exception(getErrorString(result));
+        throw common::Exception(getErrorString(result));
     }
 
 };

@@ -6,7 +6,7 @@
 Application::Application(int argumentCount, char *argumentTable[])
 : QApplication(argumentCount, argumentTable)
 {
-    mainWindow = NULL;
+    mainWindow = nullptr;
 }
 
 Application::~Application()
@@ -30,7 +30,7 @@ try
 {
     return exec();
 }
-catch(sqlite::Exception &exception)
+catch(common::Exception &exception)
 {
     if(showQuitDialog(exception.getErrorMessage()))
         quit();
@@ -49,7 +49,7 @@ bool Application::notify(QObject *receiver, QEvent *event)
     {
         return QApplication::notify(receiver, event);
     }
-    catch(sqlite::Exception &exception)
+    catch(common::Exception &exception)
     {
         if(showQuitDialog(exception.getErrorMessage()))
             quit();

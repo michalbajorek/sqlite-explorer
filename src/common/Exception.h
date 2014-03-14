@@ -3,7 +3,7 @@
 
 #include <QString>
 
-namespace sqlite
+namespace common
 {
 
 class Exception
@@ -19,6 +19,6 @@ private:
     QString errorMessage;
 };
 
-} // namespace sqlite
+} // namespace common
 
 #endif // EXCEPTION_H

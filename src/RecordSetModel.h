@@ -12,7 +12,7 @@ public:
 
     void setRecordSet(sqlite::RecordSet *newRecordSet);
     void clearRecordSet()
-        { setRecordSet(NULL); }
+        { setRecordSet(nullptr); }
 
 private:
     // QAbstractItemModel interface

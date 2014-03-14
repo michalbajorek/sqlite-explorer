@@ -7,7 +7,7 @@ using namespace sqlite;
 
 Tables::Tables(Database *database) : Object(database)
 {
-    masterTable = NULL;
+    masterTable = nullptr;
 }
 
 Tables::~Tables()
@@ -52,7 +52,7 @@ void Tables::clear()
 void Tables::clearMasterTable()
 {
     delete masterTable;
-    masterTable = NULL;
+    masterTable = nullptr;
 }
 
 void Tables::clearRestTables()
@@ -68,7 +68,7 @@ void Tables::clearRestTables()
 Table* Tables::getTable(const QString &tableName) const
 {
     Table *table = tableMap[tableName];
-    if(table == NULL)
+    if(table == nullptr)
         throw Exception("Table " + tableName + " does not exist");
     return table;
 }

@@ -6,7 +6,7 @@ using namespace sqlite;
 
 Database::Database() : progressHandler(this), tables(this)
 {
-    handle = NULL;
+    handle = nullptr;
 }
 
 Database::~Database()
@@ -37,7 +37,7 @@ void Database::close()
     checkIsOpened();
     tables.clear();
     Api::close(handle);
-    handle = NULL;
+    handle = nullptr;
 }
 
 void Database::executeSimpleQuery(const QString &queryText)

@@ -15,20 +15,18 @@ public:
     ~DatabaseList();
 
     void addDatabase(const QString &fileName);
-    void removeDatabase(const QString &fileName);
-    bool isDatabaseOpened(const QString &fileName);
+    void removeDatabase(sqlite::Database *database);
     void beginUpdate();
     void endUpdate();
 
     QAbstractItemModel *getModel()
         { return &model; }
 
+    void removeAllDatabases();
 private:
-    sqlite::Database *createAndOpenDatabase(const QString &fileName);
-    void closeAndDeleteDatabase(const QString &fileName);
     void updateModel();
 
-    DatabaseHash databaseHash;
+    QList<sqlite::Database*> databaseList;
     DatabaseTreeModel model;
     bool isUpdating;
 };

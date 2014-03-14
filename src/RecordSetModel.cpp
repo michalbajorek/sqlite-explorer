@@ -2,7 +2,7 @@
 
 RecordSetModel::RecordSetModel()
 {
-    recordSet = NULL;
+    recordSet = nullptr;
 }
 
 void RecordSetModel::setRecordSet(sqlite::RecordSet *newRecordSet)

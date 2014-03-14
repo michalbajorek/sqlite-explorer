@@ -22,7 +22,7 @@ Query::~Query()
 void Query::init()
 {
     isInProgress = false;
-    statement = NULL;
+    statement = nullptr;
 }
 
 void Query::prepare(const QString &query)

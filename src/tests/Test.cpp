@@ -7,6 +7,7 @@
 
 #include "../sqlite/Database.h"
 #include "../sqlite/Query.h"
+#include "../tree/Node.h"
 
 void Test::openNonexistentDatabase()
 {
@@ -96,6 +97,33 @@ void Test::executeBadQuery()
     QVERIFY_THROW(query.prepare("BAD SQL STATEMENT"), sqlite::Exception);
     QCOMPARE(query.isActive(), false);
     QVERIFY_NOTHROW(query.finalize());
+}
+
+void Test::createDeleteSimpleTree()
+{
+    tree::Node *root = new tree::Node;
+    QCOMPARE(root->getChildrenCount(), 0);
+    QVERIFY(root->getParent() == nullptr);
+    QCOMPARE(root->getIndex(), 0);
+    tree::Node *firstChild = new tree::Node;
+    root->addChild(firstChild);
+    QCOMPARE(root->getChildrenCount(), 1);
+    QVERIFY(firstChild->getParent() == root);
+    QCOMPARE(firstChild->getChildrenCount(), 0);
+    QCOMPARE(firstChild->getIndex(), 0);
+    tree::Node *secondChild = new tree::Node;
+    root->addChild(secondChild);
+    QCOMPARE(root->getChildrenCount(), 2);
+    QVERIFY(secondChild->getParent() == root);
+    QCOMPARE(secondChild->getChildrenCount(), 0);
+    QCOMPARE(secondChild->getIndex(), 1);
+    tree::Node *thirdChild = new tree::Node;
+    root->addChild(thirdChild);
+    QCOMPARE(root->getChildrenCount(), 3);
+    QVERIFY(thirdChild->getParent() == root);
+    QCOMPARE(thirdChild->getChildrenCount(), 0);
+    QCOMPARE(thirdChild->getIndex(), 2);
+    delete root;
 }
 
 

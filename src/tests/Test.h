@@ -10,7 +10,7 @@ class Test : public QObject
 {
     Q_OBJECT
 private slots:
-    // class Database
+    // class sqlite::Database
     void openNonexistentDatabase();
     void openExistingDatabase();
     void openDatabaseTwice();
@@ -20,9 +20,12 @@ private slots:
     void executeProperSimpleQuery();
     void executeBadSimpleQuery();
 
-    // class Query
+    // class sqlite::Query
     void executeProperQuery();
     void executeBadQuery();
+
+    // class tree::Node
+    void createDeleteSimpleTree();
 
 };
 

@@ -8,8 +8,11 @@ using namespace parsing;
 SqlSyntaxHighlighter::SqlSyntaxHighlighter(QObject *parent) :
     QSyntaxHighlighter(parent)
 {
+    mainKeywordFormat.setFontWeight(QFont::Bold);
+    mainKeywordFormat.setForeground(QColor(Qt::red));
+
     keywordFormat.setFontWeight(QFont::Bold);
-    keywordFormat.setForeground(QColor(0x52, 0xaa, 0x80));
+    keywordFormat.setForeground(QColor(Qt::darkGreen));
 
     stringFormat.setForeground(QColor(Qt::darkYellow));
 
@@ -20,6 +23,9 @@ SqlSyntaxHighlighter::SqlSyntaxHighlighter(QObject *parent) :
 
     commentFormat.setFontItalic(true);
     commentFormat.setForeground(QColor(Qt::lightGray));
+
+    illegalFormat.setBackground(QColor(Qt::red));
+    illegalFormat.setForeground(QColor(Qt::white));
 }
 
 
@@ -35,6 +41,8 @@ void SqlSyntaxHighlighter::highlightBlock(const QString &text)
         {
             case Token::None:
             case Token::Space:
+            case Token::EndOfLine:
+            case Token::Identifier:
                 break;
             case Token::MultiLineCommentStart:
             case Token::MultiLineCommentEnd:
@@ -43,18 +51,30 @@ void SqlSyntaxHighlighter::highlightBlock(const QString &text)
                 setFormat(token->position, token->length, commentFormat);
                 break;
             case Token::Minus:
+            case Token::Plus:
+            case Token::Star:
+            case Token::Slash:
             case Token::LeftParen:
             case Token::RightParen:
             case Token::Semicolon:
-            case Token::Plus:
-            case Token::Star:
             case Token::Reminder:
             case Token::Equals:
+            case Token::NotEqual:
             case Token::Comma:
             case Token::BitAnd:
             case Token::BitNot:
-            case Token::Slash:
+            case Token::BitOr:
+            case Token::Concat:
                 setFormat(token->position, token->length, operatorFormat);
+                break;
+            case Token::Illegal:
+                //setFormat(token->position, token->length, illegalFormat);
+                break;
+            case Token::MainKeyword:
+                setFormat(token->position, token->length, mainKeywordFormat);
+                break;
+            case Token::Keyword:
+                setFormat(token->position, token->length, keywordFormat);
                 break;
         }
     }

@@ -42,6 +42,149 @@ const unsigned char parsing::charType[256] =
   0x40, 0x40, 0x40, 0x40, 0x40, 0x40, 0x40, 0x40   // f8..ff    ........
 };
 
+enum
+{
+    KeywordsCount = 105,
+    MainKeywordsCount = 19,
+};
+
+static_assert(KeywordsCount + MainKeywordsCount == 124, "Invalid keywords count");
+
+const char *mainKeywords[MainKeywordsCount] =
+{
+    "ALTER",
+    "ANALYZE",
+    "ATTACH",
+    "EXPLAIN",
+    "BEGIN",
+    "COMMIT",
+    "CREATE",
+    "DELETE",
+    "DETACH",
+    "DROP",
+    "INSERT",
+    "PRAGMA",
+    "REINDEX",
+    "RELEASE",
+    "ROLLBACK",
+    "SAVEPOINT",
+    "SELECT",
+    "UPDATE",
+    "VACUUM",
+};
+
+const char *keywords[KeywordsCount] =
+{
+    "ABORT",
+    "ACTION",
+    "ADD",
+    "AFTER",
+    "ALL",
+    "AND",
+    "AS",
+    "ASC",
+    "AUTOINCREMENT",
+    "BEFORE",
+    "BETWEEN",
+    "BY",
+    "CASCADE",
+    "CASE",
+    "CAST",
+    "CHECK",
+    "COLLATE",
+    "COLUMN",
+    "CONFLICT",
+    "CONSTRAINT",
+    "CROSS",
+    "CURRENT_DATE",
+    "CURRENT_TIME",
+    "CURRENT_TIMESTAMP",
+    "DATABASE",
+    "DEFAULT",
+    "DEFERRABLE",
+    "DEFERRED",
+    "DESC",
+    "DISTINCT",
+    "EACH",
+    "ELSE",
+    "END",
+    "ESCAPE",
+    "EXCEPT",
+    "EXCLUSIVE",
+    "EXISTS",
+    "FAIL",
+    "FOR",
+    "FOREIGN",
+    "FROM",
+    "FULL",
+    "GLOB",
+    "GROUP",
+    "HAVING",
+    "IF",
+    "IGNORE",
+    "IMMEDIATE",
+    "IN",
+    "INDEX",
+    "INDEXED",
+    "INITIALLY",
+    "INNER",
+    "INSTEAD",
+    "INTERSECT",
+    "INTO",
+    "IS",
+    "ISNULL",
+    "JOIN",
+    "KEY",
+    "LEFT",
+    "LIKE",
+    "LIMIT",
+    "MATCH",
+    "NATURAL",
+    "NO",
+    "NOT",
+    "NOTNULL",
+    "NULL",
+    "OF",
+    "OFFSET",
+    "ON",
+    "OR",
+    "ORDER",
+    "OUTER",
+    "PLAN",
+    "PRIMARY",
+    "QUERY",
+    "RAISE",
+    "RECURSIVE",
+    "REFERENCES",
+    "REGEXP",
+    "RENAME",
+    "REPLACE",
+    "RESTRICT",
+    "RIGHT",
+    "ROW",
+    "SET",
+    "TABLE",
+    "TEMP",
+    "TEMPORARY",
+    "THEN",
+    "TO",
+    "TRANSACTION",
+    "TRIGGER",
+    "UNION",
+    "UNIQUE",
+    "USING",
+    "VALUES",
+    "VIEW",
+    "VIRTUAL",
+    "WHEN",
+    "WHERE",
+    "WITH",
+    "WITHOUT",
+};
+
+QSet<QString> SqlParser::mainKeywordSet;
+QSet<QString> SqlParser::keywordSet;
+
 Token::Token(Type type, int position, int length)
 {
     this->type = type;
@@ -52,11 +195,27 @@ Token::Token(Type type, int position, int length)
 SqlParser::SqlParser()
 {
     currentTokenType = Token::None;
+    createKeywordSets();
 }
 
 SqlParser::~SqlParser()
 {
     clearTokenList();
+}
+
+void SqlParser::createKeywordSets()
+{
+    if(keywordSet.isEmpty())
+    {
+        for(int i = 0; i < KeywordsCount; i++)
+            keywordSet.insert(QString(keywords[i]));
+    }
+
+    if(mainKeywordSet.isEmpty())
+    {
+        for(int i = 0; i < MainKeywordsCount; i++)
+            mainKeywordSet.insert(QString(mainKeywords[i]));
+    }
 }
 
 void SqlParser::setQueryText(const QString &newQueryText)
@@ -84,6 +243,16 @@ void SqlParser::clearTokenList()
     foreach(Token *token, tokenList)
         delete token;
     tokenList.clear();
+}
+
+bool SqlParser::isMainKeyword(const QString &identifier)
+{
+    return mainKeywordSet.contains(identifier);
+}
+
+bool SqlParser::isKeyword(const QString &identifier)
+{
+    return keywordSet.contains(identifier);
 }
 
 void SqlParser::createTokenList()
@@ -134,7 +303,7 @@ Token *SqlParser::getNextToken()
                 token = getNewToken(Token::Reminder);
                 break;
             case '=':
-                token = getEqualsToken();
+                token = parseEquals();
                 break;
             case ',':
                 token = getNewToken(Token::Comma);
@@ -148,8 +317,20 @@ Token *SqlParser::getNextToken()
             case '/':
                 token = parseSlash();
                 break;
+            case '!':
+                token = parseNotEqual();
+                break;
+            case '|':
+                token = parsePipe();
+                break;
             case '\0':
                 token = getNewToken(Token::EndOfLine);
+                break;
+            default:
+                if(isIdentifierChar(queryText[index]))
+                    token = parseIdentifier();
+                else
+                    token = getNewToken(Token::Illegal);
                 break;
         }
 
@@ -169,41 +350,12 @@ Token *SqlParser::getSpaceToken()
     return getNewToken(Token::Space, currentIndex - index);
 }
 
-Token *SqlParser::parseMinus()
-{
-    int currentIndex = index + 1;
-    if(queryText[currentIndex] == '-')
-        return getSingleLineCommentToken();
-    else
-        return getNewToken(Token::Minus);
-}
-
 Token *SqlParser::getSingleLineCommentToken()
 {
     int currentIndex = index + 2;
     while(isSingleLineCommentEnd(queryText[currentIndex]) == false)
         currentIndex++;
     return getNewToken(Token::SingleLineComment, currentIndex - index);
-}
-
-Token *SqlParser::getEqualsToken()
-{
-    int currentIndex = index + 1;
-    if(queryText[currentIndex] == '=')
-        currentIndex ++;
-    return getNewToken(Token::Equals, currentIndex - index);
-}
-
-Token *SqlParser::parseSlash()
-{
-    int currentIndex = index + 1;
-    if(queryText[currentIndex] == '*')
-    {
-        currentIndex ++;
-        return getNewToken(Token::MultiLineCommentStart, currentIndex - index);
-    }
-    else
-        return getNewToken(Token::Slash);
 }
 
 Token *SqlParser::getMultiLineCommentToken()
@@ -215,6 +367,61 @@ Token *SqlParser::getMultiLineCommentToken()
         return getNewToken(Token::MultiLineComment, currentIndex - index + 1);
     else
         return getNewToken(Token::MultiLineCommentEnd, currentIndex - index + 2);
+}
+
+Token *SqlParser::parseMinus()
+{
+    if(queryText[index + 1] == '-')
+        return getSingleLineCommentToken();
+    else
+        return getNewToken(Token::Minus);
+}
+
+Token *SqlParser::parseEquals()
+{
+    if(queryText[index + 1] == '=')
+        return getNewToken(Token::Equals, 2);
+    else
+        return getNewToken(Token::Equals);
+}
+
+Token *SqlParser::parseNotEqual()
+{
+    if(queryText[index + 1] == '=')
+        return getNewToken(Token::NotEqual, 2);
+    else
+        return getNewToken(Token::Illegal);
+}
+
+Token *SqlParser::parseSlash()
+{
+    if(queryText[index + 1] == '*')
+        return getNewToken(Token::MultiLineCommentStart, 2);
+    else
+        return getNewToken(Token::Slash);
+}
+
+Token *SqlParser::parsePipe()
+{
+    if(queryText[index + 1] == '|')
+        return getNewToken(Token::Concat, 2);
+    else
+        return getNewToken(Token::BitOr);
+}
+
+Token *SqlParser::parseIdentifier()
+{
+
+    int currentIndex = index + 1;
+    while(isIdentifierChar(queryText[currentIndex]))
+        currentIndex ++;
+    QString identifier = queryText.mid(index, currentIndex - index).toUpper();
+    if(isMainKeyword(identifier))
+        return getNewToken(Token::MainKeyword, currentIndex - index);
+    else if(isKeyword(identifier))
+        return getNewToken(Token::Keyword, currentIndex - index);
+    else
+        return getNewToken(Token::Identifier, currentIndex - index);
 }
 
 /*
@@ -252,24 +459,6 @@ int sqlite3GetToken(const unsigned char *z, int *tokenType){
       }else{
         *tokenType = TK_GT;
         return 1;
-      }
-    }
-    case '!': {
-      if( z[1]!='=' ){
-        *tokenType = TK_ILLEGAL;
-        return 2;
-      }else{
-        *tokenType = TK_NE;
-        return 2;
-      }
-    }
-    case '|': {
-      if( z[1]!='|' ){
-        *tokenType = TK_BITOR;
-        return 1;
-      }else{
-        *tokenType = TK_CONCAT;
-        return 2;
       }
     }
 

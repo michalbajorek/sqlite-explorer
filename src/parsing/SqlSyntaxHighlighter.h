@@ -20,11 +20,13 @@ private:
 
     SqlParser parser;
 
+    QTextCharFormat mainKeywordFormat;
     QTextCharFormat keywordFormat;
     QTextCharFormat stringFormat;
     QTextCharFormat operatorFormat;
     QTextCharFormat numberFormat;
     QTextCharFormat commentFormat;
+    QTextCharFormat illegalFormat;
 };
 
 } // namespace parsing

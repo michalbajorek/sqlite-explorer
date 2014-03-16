@@ -3,6 +3,8 @@
 
 #include <QString>
 
+#define SQLITE_PRIVATE
+
 #include "sqlite3.h"
 #include "../common/Exception.h"
 

@@ -19,17 +19,10 @@
   <property name="windowTitle">
    <string>Sqlite Explorer</string>
   </property>
-  <property name="styleSheet">
-   <string notr="true">QTableView  
-{
-selection-background-color: red;
-
-}</string>
-  </property>
   <widget class="QWidget" name="centralWidget">
-   <layout class="QHBoxLayout" name="horizontalLayout">
+   <layout class="QVBoxLayout" name="verticalLayout">
     <item>
-     <widget class="QSplitter" name="splitter">
+     <widget class="QSplitter" name="splitterMain">
       <property name="orientation">
        <enum>Qt::Horizontal</enum>
       </property>
@@ -44,7 +37,32 @@ selection-background-color: red;
         <number>200</number>
        </attribute>
       </widget>
-      <widget class="QTableView" name="tableView"/>
+      <widget class="QSplitter" name="splitterText">
+       <property name="orientation">
+        <enum>Qt::Vertical</enum>
+       </property>
+       <widget class="QTextEdit" name="textEdit">
+        <property name="font">
+         <font>
+          <family>Ubuntu Mono</family>
+         </font>
+        </property>
+        <property name="acceptRichText">
+         <bool>false</bool>
+        </property>
+       </widget>
+       <widget class="QTableView" name="tableView">
+        <property name="midLineWidth">
+         <number>1</number>
+        </property>
+        <property name="alternatingRowColors">
+         <bool>true</bool>
+        </property>
+        <property name="gridStyle">
+         <enum>Qt::DotLine</enum>
+        </property>
+       </widget>
+      </widget>
      </widget>
     </item>
    </layout>
@@ -78,7 +96,7 @@ selection-background-color: red;
     </size>
    </property>
    <property name="toolButtonStyle">
-    <enum>Qt::ToolButtonFollowStyle</enum>
+    <enum>Qt::ToolButtonIconOnly</enum>
    </property>
    <attribute name="toolBarArea">
     <enum>TopToolBarArea</enum>

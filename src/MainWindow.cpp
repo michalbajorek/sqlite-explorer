@@ -17,7 +17,8 @@
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
-    ui(new Ui::MainWindow)
+    ui(new Ui::MainWindow),
+    sqlHighlighter(this)
 {
     setupUi();
     connectSignals();
@@ -35,11 +36,15 @@ void MainWindow::setupUi()
     ui->setupUi(this);
     setupModels();
     setSplitterInitialSizes();
+    sqlHighlighter.setDocument(ui->textEdit->document());
 }
 
 void MainWindow::setupModels()
 {
     ui->tableView->setModel(&recordSetModel);
+    ui->tableView->setTextElideMode(Qt::ElideNone);
+    ui->tableView->horizontalHeader()->setMinimumSectionSize(25);
+
     ui->treeView->setModel(databaseList.getModel());
     ui->treeView->setSelectionMode(QTreeView::ExtendedSelection);
     ui->treeView->setSelectionBehavior(QTreeView::SelectRows);
@@ -49,26 +54,37 @@ void MainWindow::setSplitterInitialSizes()
 {
     QList<int> sizes;
     sizes << 100 << 300;
-    ui->splitter->setSizes(sizes);
+    ui->splitterMain->setSizes(sizes);
+    sizes.clear();
+    sizes << 50 << 350;
+    ui->splitterText->setSizes(sizes);
 }
 
 void MainWindow::connectSignals()
 {
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
+    connect(ui->actionOpenDatabase, SIGNAL(triggered()), this, SLOT(openDatabaseWithDialog()));
+    connect(ui->actionCloseDatabase, SIGNAL(triggered()), this, SLOT(closeSelectedDatabase()));
+    connect(ui->treeView->selectionModel(), SIGNAL(currentChanged(QModelIndex,QModelIndex)), this, SLOT(treeModelCurrentChanged(QModelIndex,QModelIndex)));
+#else
     connect(ui->actionOpenDatabase, &QAction::triggered, this, &MainWindow::openDatabaseWithDialog);
     connect(ui->actionCloseDatabase, &QAction::triggered, this, &MainWindow::closeSelectedDatabase);
     connect(ui->treeView->selectionModel(), &QItemSelectionModel::currentChanged, this, &MainWindow::treeModelCurrentChanged);
+#endif
 }
 
 void MainWindow::loadSettings()
 {
     globalSettings.loadWindowGeometry(this);
-    globalSettings.loadSplitterState(ui->splitter);
+    globalSettings.loadSplitterState(ui->splitterMain);
+    globalSettings.loadSplitterState(ui->splitterText);
 }
 
 void MainWindow::saveSettings()
 {
     globalSettings.saveWindowGeometry(this);
-    globalSettings.saveSplitterState(ui->splitter);
+    globalSettings.saveSplitterState(ui->splitterMain);
+    globalSettings.saveSplitterState(ui->splitterText);
 }
 
 void MainWindow::trySetTableToModel(sqlite::Table *table)
@@ -77,6 +93,8 @@ try
     if(table->isLoaded() == false)
         table->loadContent();
     recordSetModel.setRecordSet(table);
+    //ui->tableView->resizeRowsToContents();
+//    ui->tableView->resizeColumnsToContents();
 }
 catch(common::Exception &exception)
 {
@@ -149,6 +167,6 @@ void MainWindow::closeDatabases(QSet<sqlite::Database*> &databaseSet)
 
 void MainWindow::treeModelCurrentChanged(const QModelIndex &current, const QModelIndex &)
 {
-    tree::TableNode *node = static_cast<tree::TableNode*>(current.internalPointer());
+    tree::ViewNode *node = static_cast<tree::ViewNode*>(current.internalPointer());
     trySetTableToModel(node->getTable());
 }

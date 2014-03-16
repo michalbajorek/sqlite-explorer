@@ -2,29 +2,29 @@
 #include <QIcon>
 
 #include "DatabaseNode.h"
+#include "TableNode.h"
 
 using namespace tree;
 
 DatabaseNode::DatabaseNode(sqlite::Database *database)
-: TableNode(database->tables.getMasterTable())
 {
     this->database = database;
 }
 
-QString DatabaseNode::getText(int column) const
+QString DatabaseNode::getText() const
 {
-    if(column == 0)
-    {
-        QFileInfo fileInfo(database->getFileName());
-        return fileInfo.fileName();
-    }
-    else
-        return QString();
+    QFileInfo fileInfo(database->getFileName());
+    return fileInfo.fileName();
 }
 
 QIcon DatabaseNode::getIcon() const
 {
     return QIcon(":/Icons/16/databaseIcon");
+}
+
+sqlite::Table *DatabaseNode::getTable() const
+{
+    return database->tables.getMasterTable();
 }
 
 void DatabaseNode::createTableNodes()

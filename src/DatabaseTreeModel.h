@@ -8,6 +8,7 @@
 #include <QString>
 
 #include "tree/DatabaseNode.h"
+#include "tree/Node.h"
 #include "sqlite/Database.h"
 
 typedef QHash<QString, sqlite::Database*> DatabaseHash;
@@ -32,7 +33,7 @@ private:
     void removeDatabaseNode(sqlite::Database *database);
     tree::DatabaseNode* createDatabaseTree(sqlite::Database *database);
     tree::DatabaseNode* findDatabaseNode(sqlite::Database *database);
-    tree::TableNode* getTableNodeFromIndex(const QModelIndex &index) const;
+    tree::ViewNode* getViewNodeFromIndex(const QModelIndex &index) const;
     void createDatabaseNodeList(QList<sqlite::Database*> &databaseList);
     void deleteDatabaseNodeList();
     QString getDisplayRole(const QModelIndex &index) const;

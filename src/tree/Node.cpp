@@ -34,3 +34,12 @@ void Node::setParent(Node *newParent)
     parent = newParent;
     index = parent->getChildrenCount() - 1;
 }
+
+QString ViewNode::getRecordsCountText() const
+{
+    sqlite::Table *table = getTable();
+    if(table->isLoaded())
+        return QString::number(table->getRecordsCount());
+    else
+        return QString();
+}

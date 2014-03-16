@@ -19,10 +19,6 @@ CONFIG(release) {
 #    QMAKE_CXXFLAGS += -O3
 }
 
-CONFIG(debug, debug|release) {
-    DEFINES += _DEBUG
-}
-
 SOURCES += \
     src/sqlite/sqlite3.c \
     src/sqlite/Api.cpp \
@@ -46,7 +42,9 @@ SOURCES += \
     src/sqlite/DatabaseRepository.cpp \
     src/tree/Node.cpp \
     src/tree/DatabaseNode.cpp \
-    src/tree/TableNode.cpp
+    src/tree/TableNode.cpp \
+    src/parsing/SqlParser.cpp \
+    src/parsing/SqlSyntaxHighlighter.cpp
 
 
 HEADERS  += \
@@ -72,7 +70,9 @@ HEADERS  += \
     src/tree/Node.h \
     src/tree/DatabaseNode.h \
     src/tree/TableNode.h \
-    src/common/Exception.h
+    src/common/Exception.h \
+    src/parsing/SqlParser.h \
+    src/parsing/SqlSyntaxHighlighter.h
 
 FORMS    += \
     forms/MainWindow.ui

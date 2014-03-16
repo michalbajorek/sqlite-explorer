@@ -69,7 +69,7 @@ Table* Tables::getTable(const QString &tableName) const
 {
     Table *table = tableMap[tableName];
     if(table == nullptr)
-        throw Exception("Table " + tableName + " does not exist");
+        throw common::Exception("Table " + tableName + " does not exist");
     return table;
 }
 

@@ -1,5 +1,4 @@
-﻿#include <QIcon>
-#include "TableNode.h"
+﻿#include "TableNode.h"
 
 using namespace tree;
 
@@ -8,20 +7,17 @@ TableNode::TableNode(sqlite::Table *table)
     this->table = table;
 }
 
-QString tree::TableNode::getText(int column) const
+QString tree::TableNode::getText() const
 {
-    if(column == 0)
-        return table->getName();
-    else
-    {
-        if(table->isLoaded())
-            return QString::number(table->getRecordsCount());
-        else
-            return QString();
-    }
+    return table->getName();
 }
 
 QIcon TableNode::getIcon() const
 {
     return QIcon(":/Icons/16/tableIcon");
+}
+
+sqlite::Table *TableNode::getTable() const
+{
+    return table;
 }

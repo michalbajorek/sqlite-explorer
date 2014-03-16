@@ -53,11 +53,11 @@ void Database::vacuum()
 void Database::checkIsOpened() const
 {
     if(!isOpened())
-        throw Exception("Database is not opened");
+        throw common::Exception("Database is not opened");
 }
 
 void Database::checkIsNotOpened() const
 {
     if(isOpened())
-        throw Exception("Database is alredy opened");
+        throw common::Exception("Database is alredy opened");
 }

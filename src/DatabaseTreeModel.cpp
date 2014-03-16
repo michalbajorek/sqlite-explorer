@@ -133,20 +133,23 @@ QVariant DatabaseTreeModel::data(const QModelIndex &index, int role) const
     return QVariant();
 }
 
-tree::TableNode* DatabaseTreeModel::getTableNodeFromIndex(const QModelIndex &index) const
+tree::ViewNode* DatabaseTreeModel::getViewNodeFromIndex(const QModelIndex &index) const
 {
-    return static_cast<tree::TableNode*>(index.internalPointer());
+    return static_cast<tree::ViewNode*>(index.internalPointer());
 }
 
 QString DatabaseTreeModel::getDisplayRole(const QModelIndex &index) const
 {
-    tree::TableNode *node = getTableNodeFromIndex(index);
-    return node->getText(index.column());
+    tree::ViewNode *node = getViewNodeFromIndex(index);
+    if(index.column() == 0)
+        return node->getText();
+    else
+        return node->getRecordsCountText();
 }
 
 QIcon DatabaseTreeModel::getDecorationRole(const QModelIndex &index) const
 {
-    tree::TableNode *node = getTableNodeFromIndex(index);
+    tree::ViewNode *node = getViewNodeFromIndex(index);
     return node->getIcon();
 }
 

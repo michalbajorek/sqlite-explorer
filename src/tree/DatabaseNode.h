@@ -1,22 +1,24 @@
 ﻿#ifndef DATABASENODE_H
 #define DATABASENODE_H
 
+#include <QIcon>
 #include <QString>
 
-#include "TableNode.h"
+#include "Node.h"
 #include "../sqlite/Database.h"
 #include "../sqlite/Table.h"
 
 namespace tree
 {
 
-class DatabaseNode : public TableNode
+class DatabaseNode : public ViewNode
 {
 public:
     DatabaseNode(sqlite::Database *database);
 
-    virtual QString getText(int column) const;
+    virtual QString getText() const;
     virtual QIcon getIcon() const;
+    virtual sqlite::Table* getTable() const;
 
     sqlite::Database* getDatabase() const
         { return database; }

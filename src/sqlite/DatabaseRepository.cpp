@@ -24,7 +24,7 @@ void DatabaseRepository::release(Database *database)
 {
     QString fileName = database->getFileName();
     if(isOpened(fileName) == false)
-        throw Exception("Database not exists in repository");
+        throw common::Exception("Database not exists in repository");
     databaseHash.remove(fileName);
     delete database;
 }

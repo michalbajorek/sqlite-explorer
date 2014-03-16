@@ -8,6 +8,7 @@
 #include "DatabaseList.h"
 #include "DatabaseTreeModel.h"
 #include "RecordSetModel.h"
+#include "parsing/SqlSyntaxHighlighter.h"
 #include "sqlite/Database.h"
 #include "sqlite/ProgressHandler.h"
 
@@ -45,6 +46,7 @@ private:
     RecordSetModel recordSetModel;
     DatabaseTreeModel databaseModel;
     DatabaseList databaseList;
+    parsing::SqlSyntaxHighlighter sqlHighlighter;
 };
 
 #endif // GUI_MAIN_WINDOW_H

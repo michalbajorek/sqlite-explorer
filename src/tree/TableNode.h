@@ -1,22 +1,23 @@
 ﻿#ifndef TABLENODE_H
 #define TABLENODE_H
 
+#include <QIcon>
+#include <QString>
+
 #include "Node.h"
 #include "../sqlite/Table.h"
 
 namespace tree
 {
 
-class TableNode : public Node
+class TableNode : public ViewNode
 {
 public:
     TableNode(sqlite::Table *table);
 
-    virtual QString getText(int column) const;
+    virtual QString getText() const;
     virtual QIcon getIcon() const;
-
-    sqlite::Table* getTable() const
-        { return table; }
+    virtual sqlite::Table* getTable() const;
 
 private:
     sqlite::Table *table;

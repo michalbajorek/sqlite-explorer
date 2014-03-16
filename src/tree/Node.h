@@ -1,8 +1,11 @@
 ﻿#ifndef NODE_H
 #define NODE_H
 
+#include <QIcon>
 #include <QList>
 #include <QString>
+
+#include "../sqlite/Table.h"
 
 namespace tree
 {
@@ -35,6 +38,15 @@ private:
     QList<Node*> children;
     int index;
 
+};
+
+class ViewNode : public Node
+{
+public:
+    virtual QString getText() const = 0;
+    virtual QIcon getIcon() const = 0;
+    virtual sqlite::Table* getTable() const  = 0;
+    QString getRecordsCountText() const;
 };
 
 } // namespace tree

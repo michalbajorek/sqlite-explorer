@@ -4,200 +4,10 @@
 
 using namespace parsing;
 
-const unsigned char parsing::charType[256] =
-{
-  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,  // 00..07    ........
-  0x00, 0x01, 0x01, 0x01, 0x01, 0x01, 0x00, 0x00,  // 08..0f    ........
-  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,  // 10..17    ........
-  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,  // 18..1f    ........
-  0x01, 0x00, 0x00, 0x00, 0x40, 0x00, 0x00, 0x00,  // 20..27     !"#$%&'
-  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,  // 28..2f    ()*+,-./
-  0x0c, 0x0c, 0x0c, 0x0c, 0x0c, 0x0c, 0x0c, 0x0c,  // 30..37    01234567
-  0x0c, 0x0c, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,  // 38..3f    89:;<=>?
-
-  0x00, 0x0a, 0x0a, 0x0a, 0x0a, 0x0a, 0x0a, 0x02,  // 40..47    @ABCDEFG
-  0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02,  // 48..4f    HIJKLMNO
-  0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02,  // 50..57    PQRSTUVW
-  0x02, 0x02, 0x02, 0x00, 0x00, 0x00, 0x00, 0x40,  // 58..5f    XYZ[\]^_
-  0x00, 0x2a, 0x2a, 0x2a, 0x2a, 0x2a, 0x2a, 0x22,  // 60..67    `abcdefg
-  0x22, 0x22, 0x22, 0x22, 0x22, 0x22, 0x22, 0x22,  // 68..6f    hijklmno
-  0x22, 0x22, 0x22, 0x22, 0x22, 0x22, 0x22, 0x22,  // 70..77    pqrstuvw
-  0x22, 0x22, 0x22, 0x00, 0x00, 0x00, 0x00, 0x00,  // 78..7f    xyz{|}~.
-
-  0x40, 0x40, 0x40, 0x40, 0x40, 0x40, 0x40, 0x40,  // 80..87    ........
-  0x40, 0x40, 0x40, 0x40, 0x40, 0x40, 0x40, 0x40,  // 88..8f    ........
-  0x40, 0x40, 0x40, 0x40, 0x40, 0x40, 0x40, 0x40,  // 90..97    ........
-  0x40, 0x40, 0x40, 0x40, 0x40, 0x40, 0x40, 0x40,  // 98..9f    ........
-  0x40, 0x40, 0x40, 0x40, 0x40, 0x40, 0x40, 0x40,  // a0..a7    ........
-  0x40, 0x40, 0x40, 0x40, 0x40, 0x40, 0x40, 0x40,  // a8..af    ........
-  0x40, 0x40, 0x40, 0x40, 0x40, 0x40, 0x40, 0x40,  // b0..b7    ........
-  0x40, 0x40, 0x40, 0x40, 0x40, 0x40, 0x40, 0x40,  // b8..bf    ........
-
-  0x40, 0x40, 0x40, 0x40, 0x40, 0x40, 0x40, 0x40,  // c0..c7    ........
-  0x40, 0x40, 0x40, 0x40, 0x40, 0x40, 0x40, 0x40,  // c8..cf    ........
-  0x40, 0x40, 0x40, 0x40, 0x40, 0x40, 0x40, 0x40,  // d0..d7    ........
-  0x40, 0x40, 0x40, 0x40, 0x40, 0x40, 0x40, 0x40,  // d8..df    ........
-  0x40, 0x40, 0x40, 0x40, 0x40, 0x40, 0x40, 0x40,  // e0..e7    ........
-  0x40, 0x40, 0x40, 0x40, 0x40, 0x40, 0x40, 0x40,  // e8..ef    ........
-  0x40, 0x40, 0x40, 0x40, 0x40, 0x40, 0x40, 0x40,  // f0..f7    ........
-  0x40, 0x40, 0x40, 0x40, 0x40, 0x40, 0x40, 0x40   // f8..ff    ........
-};
-
-enum
-{
-    KeywordsCount = 105,
-    MainKeywordsCount = 19,
-};
-
-static_assert(KeywordsCount + MainKeywordsCount == 124, "Invalid keywords count");
-
-const char *mainKeywords[MainKeywordsCount] =
-{
-    "ALTER",
-    "ANALYZE",
-    "ATTACH",
-    "EXPLAIN",
-    "BEGIN",
-    "COMMIT",
-    "CREATE",
-    "DELETE",
-    "DETACH",
-    "DROP",
-    "INSERT",
-    "PRAGMA",
-    "REINDEX",
-    "RELEASE",
-    "ROLLBACK",
-    "SAVEPOINT",
-    "SELECT",
-    "UPDATE",
-    "VACUUM",
-};
-
-const char *keywords[KeywordsCount] =
-{
-    "ABORT",
-    "ACTION",
-    "ADD",
-    "AFTER",
-    "ALL",
-    "AND",
-    "AS",
-    "ASC",
-    "AUTOINCREMENT",
-    "BEFORE",
-    "BETWEEN",
-    "BY",
-    "CASCADE",
-    "CASE",
-    "CAST",
-    "CHECK",
-    "COLLATE",
-    "COLUMN",
-    "CONFLICT",
-    "CONSTRAINT",
-    "CROSS",
-    "CURRENT_DATE",
-    "CURRENT_TIME",
-    "CURRENT_TIMESTAMP",
-    "DATABASE",
-    "DEFAULT",
-    "DEFERRABLE",
-    "DEFERRED",
-    "DESC",
-    "DISTINCT",
-    "EACH",
-    "ELSE",
-    "END",
-    "ESCAPE",
-    "EXCEPT",
-    "EXCLUSIVE",
-    "EXISTS",
-    "FAIL",
-    "FOR",
-    "FOREIGN",
-    "FROM",
-    "FULL",
-    "GLOB",
-    "GROUP",
-    "HAVING",
-    "IF",
-    "IGNORE",
-    "IMMEDIATE",
-    "IN",
-    "INDEX",
-    "INDEXED",
-    "INITIALLY",
-    "INNER",
-    "INSTEAD",
-    "INTERSECT",
-    "INTO",
-    "IS",
-    "ISNULL",
-    "JOIN",
-    "KEY",
-    "LEFT",
-    "LIKE",
-    "LIMIT",
-    "MATCH",
-    "NATURAL",
-    "NO",
-    "NOT",
-    "NOTNULL",
-    "NULL",
-    "OF",
-    "OFFSET",
-    "ON",
-    "OR",
-    "ORDER",
-    "OUTER",
-    "PLAN",
-    "PRIMARY",
-    "QUERY",
-    "RAISE",
-    "RECURSIVE",
-    "REFERENCES",
-    "REGEXP",
-    "RENAME",
-    "REPLACE",
-    "RESTRICT",
-    "RIGHT",
-    "ROW",
-    "SET",
-    "TABLE",
-    "TEMP",
-    "TEMPORARY",
-    "THEN",
-    "TO",
-    "TRANSACTION",
-    "TRIGGER",
-    "UNION",
-    "UNIQUE",
-    "USING",
-    "VALUES",
-    "VIEW",
-    "VIRTUAL",
-    "WHEN",
-    "WHERE",
-    "WITH",
-    "WITHOUT",
-};
-
-QSet<QString> SqlParser::mainKeywordSet;
-QSet<QString> SqlParser::keywordSet;
-
-Token::Token(Type type, int position, int length)
-{
-    this->type = type;
-    this->position = position;
-    this->length = length;
-}
 
 SqlParser::SqlParser()
 {
-    currentToken = nullptr;
-    currentTokenType = Token::None;
-    createKeywordSets();
+    initParser();
 }
 
 SqlParser::~SqlParser()
@@ -205,39 +15,19 @@ SqlParser::~SqlParser()
     clearTokenList();
 }
 
-void SqlParser::createKeywordSets()
+void SqlParser::initParser()
 {
-    if(keywordSet.isEmpty())
-    {
-        for(int i = 0; i < KeywordsCount; i++)
-            keywordSet.insert(QString(keywords[i]));
-    }
-
-    if(mainKeywordSet.isEmpty())
-    {
-        for(int i = 0; i < MainKeywordsCount; i++)
-            mainKeywordSet.insert(QString(mainKeywords[i]));
-    }
-}
-
-void SqlParser::setQueryText(const QString &newQueryText)
-{
-    queryText = newQueryText;
     index = 0;
+    currentToken = nullptr;
+    lastTokenType = TokenType::None;
+}
+
+void SqlParser::setTextAndLastTokenType(const QString &newText, TokenType tokenType)
+{
+    initParser();
+    text = newText;
+    setLastTokenType(tokenType);
     createTokenList();
-}
-
-void SqlParser::setLastTokenType(int tokenType)
-{
-    if(tokenType == -1)
-        currentTokenType = Token::None;
-    else
-        currentTokenType = Token::Type(tokenType);
-}
-
-int SqlParser::getLastTokenType()
-{
-    return currentTokenType;
 }
 
 void SqlParser::clearTokenList()
@@ -247,33 +37,38 @@ void SqlParser::clearTokenList()
     tokenList.clear();
 }
 
-bool SqlParser::isMainKeyword(const QString &identifier)
-{
-    return mainKeywordSet.contains(identifier);
-}
-
-bool SqlParser::isKeyword(const QString &identifier)
-{
-    return keywordSet.contains(identifier);
-}
-
 void SqlParser::createTokenList()
 {
     clearTokenList();
-    while(Token *token = getNextToken())
+    while(true)
     {
-        tokenList.append(token);
-        if(token->type == Token::EndOfLine || token->type == Token::MultiLineComment)
+        addNextToken();
+        advanceCurrentIndex();
+        if(isEndOfLine())
             break;
+        setLastTokenType(currentToken->type);
     }
 }
 
-Token *SqlParser::getNextToken()
+void SqlParser::addNextToken()
 {
-    currentToken = nullptr;
-    if(currentTokenType == Token::MultiLineCommentStart || currentTokenType == Token::MultiLineComment)
-        parseMultiLineComment();
+    parseToken();
+    if(currentToken == nullptr)
+        throw common::Exception("Undefined syntax error");
+    tokenList.append(currentToken);
+}
+
+void SqlParser::parseToken()
+{
+    if(lastTokenType == TokenType::MultiLineCommentStart || lastTokenType == TokenType::MultiLineComment)
+    {
+        if(getChar() == '\0')
+            parseEndOfLine();
+        else
+            parseMultiLineComment();
+    }
     else
+    {
         switch(getChar())
         {
             case ' ': case '\t': case '\n': case '\f': case '\r':
@@ -328,101 +123,95 @@ Token *SqlParser::getNextToken()
                 parseEndOfLine();
                 break;
             default:
-                if(isIdentifierChar(getChar()))
+                if(keywords.isIdentifierChar(getChar()))
                     parseIdentifier();
                 else
-                    setNewCurrentToken(Token::Illegal);
+                    setNewCurrentToken(TokenType::Illegal);
                 break;
         }
-
-    if(currentToken == nullptr)
-        throw common::Exception("Token can not be null");
-
-    index += currentToken->length;
-    currentTokenType = currentToken->type;
-    return currentToken;
+    }
 }
 
 void SqlParser::parseSpaces()
 {
     int currentIndex = index + 1;
-    while(isSpace(queryText[currentIndex].unicode()))
+    while(isspace(text[currentIndex].unicode()))
         currentIndex ++;
-    setNewCurrentToken(Token::Space, currentIndex - index);
+    setNewCurrentToken(TokenType::Space, currentIndex - index);
 }
 
 void SqlParser::parseSingleLineComment()
 {
     int currentIndex = index + 2;
-    while(isSingleLineCommentEnd(queryText[currentIndex].unicode()) == false)
+    while(isSingleLineCommentEnd(text[currentIndex].unicode()) == false)
         currentIndex ++;
-    setNewCurrentToken(Token::SingleLineComment, currentIndex - index);
+    setNewCurrentToken(TokenType::SingleLineComment, currentIndex - index);
 }
 
 void SqlParser::parseMultiLineComment()
 {
     int currentIndex = index;
-    while(queryText[currentIndex] != '\0' && (queryText[currentIndex] != '*' || queryText[currentIndex + 1] != '/'))
+    while(text[currentIndex] != '\0' && (text[currentIndex] != '*' || text[currentIndex + 1] != '/'))
         currentIndex ++;
-    if(queryText[currentIndex] == '\0')
-        setNewCurrentToken(Token::MultiLineComment, currentIndex - index + 1);
+    if(text[currentIndex] == '\0')
+        setNewCurrentToken(TokenType::MultiLineComment, currentIndex - index + 1);
     else
-        setNewCurrentToken(Token::MultiLineCommentEnd, currentIndex - index + 2);
+        setNewCurrentToken(TokenType::MultiLineCommentEnd, currentIndex - index + 2);
 }
 
 void SqlParser::parseMinus()
 {
-    if(queryText[index + 1] == '-')
+    if(text[index + 1] == '-')
         parseSingleLineComment();
     else
-        setNewCurrentToken(Token::Minus);
+        setNewCurrentToken(TokenType::Minus);
 }
 
 void SqlParser::parseEquals()
 {
-    if(queryText[index + 1] == '=')
-        setNewCurrentToken(Token::Equals, 2);
+    if(text[index + 1] == '=')
+        setNewCurrentToken(TokenType::Equals, 2);
     else
-        setNewCurrentToken(Token::Equals);
+        setNewCurrentToken(TokenType::Equals);
 }
 
 void SqlParser::parseNotEqual()
 {
-    if(queryText[index + 1] == '=')
-        setNewCurrentToken(Token::NotEqual, 2);
+    if(text[index + 1] == '=')
+        setNewCurrentToken(TokenType::NotEqual, 2);
     else
-        setNewCurrentToken(Token::Illegal);
+        setNewCurrentToken(TokenType::Illegal);
 }
 
 void SqlParser::parseSlash()
 {
-    if(queryText[index + 1] == '*')
-        setNewCurrentToken(Token::MultiLineCommentStart, 2);
+    if(text[index + 1] == '*')
+        setNewCurrentToken(TokenType::MultiLineCommentStart, 2);
     else
-        setNewCurrentToken(Token::Slash);
+        setNewCurrentToken(TokenType::Slash);
 }
 
 void SqlParser::parsePipe()
 {
-    if(queryText[index + 1] == '|')
-        setNewCurrentToken(Token::Concat, 2);
+    if(text[index + 1] == '|')
+        setNewCurrentToken(TokenType::Concat, 2);
     else
-        setNewCurrentToken(Token::BitOr);
+        setNewCurrentToken(TokenType::BitOr);
 }
 
 void SqlParser::parseIdentifier()
 {
 
     int currentIndex = index + 1;
-    while(isIdentifierChar(queryText[currentIndex].unicode()))
+    while(keywords.isIdentifierChar(text[currentIndex].unicode()))
         currentIndex ++;
-    QString identifier = queryText.mid(index, currentIndex - index).toUpper();
-    if(isMainKeyword(identifier))
-        setNewCurrentToken(Token::MainKeyword, currentIndex - index);
-    else if(isKeyword(identifier))
-        setNewCurrentToken(Token::Keyword, currentIndex - index);
+    QString identifier = text.mid(index, currentIndex - index).toUpper();
+    if(keywords.isPrimaryKeyword(identifier))
+        setNewCurrentToken(TokenType::PrimaryKeyword, currentIndex - index);
+    else if(keywords.isSecondaryKeyword(identifier))
+        setNewCurrentToken(TokenType::SecondaryKeyword, currentIndex - index);
     else
-        setNewCurrentToken(Token::Identifier, currentIndex - index);
+        setNewCurrentToken(TokenType::Identifier, currentIndex - index);
 }
 
 void SqlParser::parseString()
@@ -430,7 +219,7 @@ void SqlParser::parseString()
     int currentIndex = 1;
     while(getChar(currentIndex) != L'\'' && getChar(currentIndex) != '\0')
         currentIndex ++;
-    setNewCurrentToken(Token::String, currentIndex + 1);
+    setNewCurrentToken(TokenType::String, currentIndex + 1);
 }
 
 

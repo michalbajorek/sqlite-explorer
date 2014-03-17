@@ -44,7 +44,9 @@ SOURCES += \
     src/tree/DatabaseNode.cpp \
     src/tree/TableNode.cpp \
     src/parsing/SqlParser.cpp \
-    src/parsing/SqlSyntaxHighlighter.cpp
+    src/parsing/SqlSyntaxHighlighter.cpp \
+    src/parsing/Token.cpp \
+    src/parsing/Keywords.cpp
 
 
 HEADERS  += \
@@ -72,7 +74,9 @@ HEADERS  += \
     src/tree/TableNode.h \
     src/common/Exception.h \
     src/parsing/SqlParser.h \
-    src/parsing/SqlSyntaxHighlighter.h
+    src/parsing/SqlSyntaxHighlighter.h \
+    src/parsing/Token.h \
+    src/parsing/Keywords.h
 
 FORMS    += \
     forms/MainWindow.ui

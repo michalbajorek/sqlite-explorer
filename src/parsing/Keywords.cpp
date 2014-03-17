@@ -1,0 +1,206 @@
+﻿#include "Keywords.h"
+
+using namespace parsing;
+
+const char *Keywords::primaryKeywords[Keywords::PrimaryKeywordsCount] =
+{
+    "ALTER",
+    "ANALYZE",
+    "ATTACH",
+    "EXPLAIN",
+    "BEGIN",
+    "COMMIT",
+    "CREATE",
+    "DELETE",
+    "DETACH",
+    "DROP",
+    "INSERT",
+    "PRAGMA",
+    "REINDEX",
+    "RELEASE",
+    "ROLLBACK",
+    "SAVEPOINT",
+    "SELECT",
+    "UPDATE",
+    "VACUUM",
+};
+
+const char *Keywords::secondaryKeywords[Keywords::SecondaryKeywordsCount] =
+{
+    "ABORT",
+    "ACTION",
+    "ADD",
+    "AFTER",
+    "ALL",
+    "AND",
+    "AS",
+    "ASC",
+    "AUTOINCREMENT",
+    "BEFORE",
+    "BETWEEN",
+    "BY",
+    "CASCADE",
+    "CASE",
+    "CAST",
+    "CHECK",
+    "COLLATE",
+    "COLUMN",
+    "CONFLICT",
+    "CONSTRAINT",
+    "CROSS",
+    "CURRENT_DATE",
+    "CURRENT_TIME",
+    "CURRENT_TIMESTAMP",
+    "DATABASE",
+    "DEFAULT",
+    "DEFERRABLE",
+    "DEFERRED",
+    "DESC",
+    "DISTINCT",
+    "EACH",
+    "ELSE",
+    "END",
+    "ESCAPE",
+    "EXCEPT",
+    "EXCLUSIVE",
+    "EXISTS",
+    "FAIL",
+    "FOR",
+    "FOREIGN",
+    "FROM",
+    "FULL",
+    "GLOB",
+    "GROUP",
+    "HAVING",
+    "IF",
+    "IGNORE",
+    "IMMEDIATE",
+    "IN",
+    "INDEX",
+    "INDEXED",
+    "INITIALLY",
+    "INNER",
+    "INSTEAD",
+    "INTERSECT",
+    "INTO",
+    "IS",
+    "ISNULL",
+    "JOIN",
+    "KEY",
+    "LEFT",
+    "LIKE",
+    "LIMIT",
+    "MATCH",
+    "NATURAL",
+    "NO",
+    "NOT",
+    "NOTNULL",
+    "NULL",
+    "OF",
+    "OFFSET",
+    "ON",
+    "OR",
+    "ORDER",
+    "OUTER",
+    "PLAN",
+    "PRIMARY",
+    "QUERY",
+    "RAISE",
+    "RECURSIVE",
+    "REFERENCES",
+    "REGEXP",
+    "RENAME",
+    "REPLACE",
+    "RESTRICT",
+    "RIGHT",
+    "ROW",
+    "SET",
+    "TABLE",
+    "TEMP",
+    "TEMPORARY",
+    "THEN",
+    "TO",
+    "TRANSACTION",
+    "TRIGGER",
+    "UNION",
+    "UNIQUE",
+    "USING",
+    "VALUES",
+    "VIEW",
+    "VIRTUAL",
+    "WHEN",
+    "WHERE",
+    "WITH",
+    "WITHOUT",
+};
+
+const unsigned char Keywords::charType[256] =
+{
+  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,  // 00..07    ........
+  0x00, 0x01, 0x01, 0x01, 0x01, 0x01, 0x00, 0x00,  // 08..0f    ........
+  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,  // 10..17    ........
+  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,  // 18..1f    ........
+  0x01, 0x00, 0x00, 0x00, 0x40, 0x00, 0x00, 0x00,  // 20..27     !"#$%&'
+  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,  // 28..2f    ()*+,-./
+  0x0c, 0x0c, 0x0c, 0x0c, 0x0c, 0x0c, 0x0c, 0x0c,  // 30..37    01234567
+  0x0c, 0x0c, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,  // 38..3f    89:;<=>?
+
+  0x00, 0x0a, 0x0a, 0x0a, 0x0a, 0x0a, 0x0a, 0x02,  // 40..47    @ABCDEFG
+  0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02,  // 48..4f    HIJKLMNO
+  0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02,  // 50..57    PQRSTUVW
+  0x02, 0x02, 0x02, 0x00, 0x00, 0x00, 0x00, 0x40,  // 58..5f    XYZ[\]^_
+  0x00, 0x2a, 0x2a, 0x2a, 0x2a, 0x2a, 0x2a, 0x22,  // 60..67    `abcdefg
+  0x22, 0x22, 0x22, 0x22, 0x22, 0x22, 0x22, 0x22,  // 68..6f    hijklmno
+  0x22, 0x22, 0x22, 0x22, 0x22, 0x22, 0x22, 0x22,  // 70..77    pqrstuvw
+  0x22, 0x22, 0x22, 0x00, 0x00, 0x00, 0x00, 0x00,  // 78..7f    xyz{|}~.
+
+  0x40, 0x40, 0x40, 0x40, 0x40, 0x40, 0x40, 0x40,  // 80..87    ........
+  0x40, 0x40, 0x40, 0x40, 0x40, 0x40, 0x40, 0x40,  // 88..8f    ........
+  0x40, 0x40, 0x40, 0x40, 0x40, 0x40, 0x40, 0x40,  // 90..97    ........
+  0x40, 0x40, 0x40, 0x40, 0x40, 0x40, 0x40, 0x40,  // 98..9f    ........
+  0x40, 0x40, 0x40, 0x40, 0x40, 0x40, 0x40, 0x40,  // a0..a7    ........
+  0x40, 0x40, 0x40, 0x40, 0x40, 0x40, 0x40, 0x40,  // a8..af    ........
+  0x40, 0x40, 0x40, 0x40, 0x40, 0x40, 0x40, 0x40,  // b0..b7    ........
+  0x40, 0x40, 0x40, 0x40, 0x40, 0x40, 0x40, 0x40,  // b8..bf    ........
+
+  0x40, 0x40, 0x40, 0x40, 0x40, 0x40, 0x40, 0x40,  // c0..c7    ........
+  0x40, 0x40, 0x40, 0x40, 0x40, 0x40, 0x40, 0x40,  // c8..cf    ........
+  0x40, 0x40, 0x40, 0x40, 0x40, 0x40, 0x40, 0x40,  // d0..d7    ........
+  0x40, 0x40, 0x40, 0x40, 0x40, 0x40, 0x40, 0x40,  // d8..df    ........
+  0x40, 0x40, 0x40, 0x40, 0x40, 0x40, 0x40, 0x40,  // e0..e7    ........
+  0x40, 0x40, 0x40, 0x40, 0x40, 0x40, 0x40, 0x40,  // e8..ef    ........
+  0x40, 0x40, 0x40, 0x40, 0x40, 0x40, 0x40, 0x40,  // f0..f7    ........
+  0x40, 0x40, 0x40, 0x40, 0x40, 0x40, 0x40, 0x40   // f8..ff    ........
+};
+
+QSet<QString> Keywords::primaryKeywordSet;
+QSet<QString> Keywords::secondaryKeywordSet;
+
+Keywords::Keywords()
+{
+    createKeywordSets();
+}
+
+void Keywords::createKeywordSets()
+{
+    createPrimaryKeywordSet();
+    createSecondaryKeywordSet();
+}
+
+void Keywords::createPrimaryKeywordSet()
+{
+    if(primaryKeywordSet.isEmpty())
+    {
+        for(int i = 0; i < PrimaryKeywordsCount; i++)
+            primaryKeywordSet.insert(primaryKeywords[i]);
+    }
+}
+
+void Keywords::createSecondaryKeywordSet()
+{
+    if(secondaryKeywordSet.isEmpty())
+    {
+        for(int i = 0; i < SecondaryKeywordsCount; i++)
+            secondaryKeywordSet.insert(secondaryKeywords[i]);
+    }
+}

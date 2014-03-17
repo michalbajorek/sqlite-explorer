@@ -6,50 +6,11 @@
 #include <QString>
 #include <string>
 
+#include "Keywords.h"
+#include "Token.h"
+
 namespace parsing
 {
-
-
-class Token
-{
-public:
-    enum Type
-    {
-        None,
-        Space,
-        SingleLineComment,
-        Minus,
-        LeftParen,
-        RightParen,
-        Semicolon,
-        Plus,
-        Star,
-        Reminder,
-        Equals,
-        Comma,
-        BitAnd,
-        BitNot,
-        Slash,
-        MultiLineCommentStart,
-        MultiLineComment,
-        MultiLineCommentEnd,
-        EndOfLine,
-        NotEqual,
-        Illegal,
-        Concat,
-        BitOr,
-        Identifier,
-        MainKeyword,
-        Keyword,
-        String,
-    };
-
-    Token(Type type, int position, int length);
-
-    Type type;
-    int position;
-    int length;
-};
 
 extern const unsigned char charType[];
 
@@ -59,41 +20,42 @@ public:
     SqlParser();
     ~SqlParser();
 
-    void setQueryText(const QString &newQueryText);
-    void setLastTokenType(int tokenType);
-    int getLastTokenType();
+    void setTextAndLastTokenType(const QString &newText, TokenType tokenType);
+
+
+    TokenType getLastTokenType() const
+        { return lastTokenType; }
 
     QList<Token*> tokenList;
 
-    void createKeywordSets();
 private:
+    void initParser();
     void clearTokenList();
 
-    bool isSpace(char ch)
-        { return charType[static_cast<unsigned char>(ch)] & 0x01; }
+    void setLastTokenType(TokenType tokenType)
+        { lastTokenType = tokenType; }
 
-    bool isIdentifierChar(char ch)
-        { return charType[static_cast<unsigned char>(ch)] & 0x46; }
+    void advanceCurrentIndex()
+        { index += currentToken->length; }
+
+    bool isEndOfLine()
+        { return currentToken->type == TokenType::EndOfLine; }
 
     bool isSingleLineCommentEnd(char ch)
         { return ch == '\n' || ch == '\0'; }
 
-    void setNewCurrentToken(Token::Type type, int length = 1)
+    void setNewCurrentToken(TokenType type, int length = 1)
         { currentToken = new Token(type, index, length); }
 
     wchar_t getChar(int offset = 0) const
         {
         offset += index;
-        return offset < queryText.length() ? queryText[offset].unicode() : 0;
+        return offset < text.length() ? text[offset].unicode() : 0;
         }
 
-    bool isMainKeyword(const QString &identifier);
-    bool isKeyword(const QString &identifier);
-
     void createTokenList();
-
-    Token *getNextToken();
-
+    void addNextToken();
+    void parseToken();
     void parseSpaces();
     void parseSingleLineComment();
     void parseMultiLineComment();
@@ -106,43 +68,40 @@ private:
     void parseString();
 
     void parseLeftParen()
-        { setNewCurrentToken(Token::LeftParen); }
+        { setNewCurrentToken(TokenType::LeftParen); }
 
     void parseRightParen()
-        { setNewCurrentToken(Token::RightParen); }
+        { setNewCurrentToken(TokenType::RightParen); }
 
     void parseSemicolon()
-        { setNewCurrentToken(Token::Semicolon); }
+        { setNewCurrentToken(TokenType::Semicolon); }
 
     void parsePlus()
-        { setNewCurrentToken(Token::Plus); }
+        { setNewCurrentToken(TokenType::Plus); }
 
     void parseStar()
-        { setNewCurrentToken(Token::Star); }
+        { setNewCurrentToken(TokenType::Star); }
 
     void parseReminder()
-        { setNewCurrentToken(Token::Reminder); }
+        { setNewCurrentToken(TokenType::Reminder); }
 
     void parseComma()
-        { setNewCurrentToken(Token::Comma); }
+        { setNewCurrentToken(TokenType::Comma); }
 
     void parseBitAnd()
-        { setNewCurrentToken(Token::BitAnd); }
+        { setNewCurrentToken(TokenType::BitAnd); }
 
     void parseBitNot()
-        { setNewCurrentToken(Token::BitNot); }
+        { setNewCurrentToken(TokenType::BitNot); }
 
     void parseEndOfLine()
-        { setNewCurrentToken(Token::EndOfLine); }
+        { setNewCurrentToken(TokenType::EndOfLine); }
 
-    QString queryText;
+    QString text;
     int index;
-    Token::Type currentTokenType;
+    TokenType lastTokenType;
     Token *currentToken;
-
-    static QSet<QString> mainKeywordSet;
-    static QSet<QString> keywordSet;
-
+    Keywords keywords;
 };
 
 } // namespace parsing

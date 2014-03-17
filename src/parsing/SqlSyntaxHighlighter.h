@@ -15,13 +15,16 @@ class SqlSyntaxHighlighter : public QSyntaxHighlighter
 public:
     explicit SqlSyntaxHighlighter(QObject *parent = 0);
 
+    void setTokenFormats();
 private:
+    void setupFormats();
     virtual void highlightBlock(const QString &text);
+    void createParserTokenList(const QString &text);
 
     SqlParser parser;
 
-    QTextCharFormat mainKeywordFormat;
-    QTextCharFormat keywordFormat;
+    QTextCharFormat primaryKeywordFormat;
+    QTextCharFormat secondaryKeywordFormat;
     QTextCharFormat stringFormat;
     QTextCharFormat operatorFormat;
     QTextCharFormat numberFormat;

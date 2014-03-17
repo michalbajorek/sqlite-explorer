@@ -41,6 +41,7 @@ public:
         Identifier,
         MainKeyword,
         Keyword,
+        String,
     };
 
     Token(Type type, int position, int length);
@@ -77,26 +78,64 @@ private:
     bool isSingleLineCommentEnd(char ch)
         { return ch == '\n' || ch == '\0'; }
 
-    Token* getNewToken(Token::Type type, int length = 1)
-        { return new Token(type, index, length); }
+    void setNewCurrentToken(Token::Type type, int length = 1)
+        { currentToken = new Token(type, index, length); }
+
+    wchar_t getChar(int offset = 0) const
+        {
+        offset += index;
+        return offset < queryText.length() ? queryText[offset].unicode() : 0;
+        }
 
     bool isMainKeyword(const QString &identifier);
     bool isKeyword(const QString &identifier);
 
     void createTokenList();
 
-    Token* getNextToken();
-    Token* getSpaceToken();
-    Token* parseMinus();
-    Token* getSingleLineCommentToken();
-    Token* parseEquals();
-    Token* parseSlash();
-    Token* getMultiLineCommentToken();
-    Token* parseNotEqual();
-    Token* parsePipe();
-    Token* parseIdentifier();
+    Token *getNextToken();
 
-    QByteArray queryText;
+    void parseSpaces();
+    void parseSingleLineComment();
+    void parseMultiLineComment();
+    void parseMinus();
+    void parseEquals();
+    void parseSlash();
+    void parseNotEqual();
+    void parsePipe();
+    void parseIdentifier();
+    void parseString();
+
+    void parseLeftParen()
+        { setNewCurrentToken(Token::LeftParen); }
+
+    void parseRightParen()
+        { setNewCurrentToken(Token::RightParen); }
+
+    void parseSemicolon()
+        { setNewCurrentToken(Token::Semicolon); }
+
+    void parsePlus()
+        { setNewCurrentToken(Token::Plus); }
+
+    void parseStar()
+        { setNewCurrentToken(Token::Star); }
+
+    void parseReminder()
+        { setNewCurrentToken(Token::Reminder); }
+
+    void parseComma()
+        { setNewCurrentToken(Token::Comma); }
+
+    void parseBitAnd()
+        { setNewCurrentToken(Token::BitAnd); }
+
+    void parseBitNot()
+        { setNewCurrentToken(Token::BitNot); }
+
+    void parseEndOfLine()
+        { setNewCurrentToken(Token::EndOfLine); }
+
+    QString queryText;
     int index;
     Token::Type currentTokenType;
     Token *currentToken;

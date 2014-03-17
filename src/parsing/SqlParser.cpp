@@ -1,5 +1,6 @@
 ﻿#include <QDebug>
 #include "SqlParser.h"
+#include "../common/Exception.h"
 
 using namespace parsing;
 
@@ -194,6 +195,7 @@ Token::Token(Type type, int position, int length)
 
 SqlParser::SqlParser()
 {
+    currentToken = nullptr;
     currentTokenType = Token::None;
     createKeywordSets();
 }
@@ -220,7 +222,7 @@ void SqlParser::createKeywordSets()
 
 void SqlParser::setQueryText(const QString &newQueryText)
 {
-    queryText = newQueryText.toUtf8();
+    queryText = newQueryText;
     index = 0;
     createTokenList();
 }
@@ -268,161 +270,193 @@ void SqlParser::createTokenList()
 
 Token *SqlParser::getNextToken()
 {
-    Token *token = nullptr;
+    currentToken = nullptr;
     if(currentTokenType == Token::MultiLineCommentStart || currentTokenType == Token::MultiLineComment)
-        token = getMultiLineCommentToken();
+        parseMultiLineComment();
     else
-        switch(queryText[index])
+        switch(getChar())
         {
-            case ' ':
-            case '\t':
-            case '\n':
-            case '\f':
-            case '\r':
-                token = getSpaceToken();
+            case ' ': case '\t': case '\n': case '\f': case '\r':
+                parseSpaces();
                 break;
             case '-':
-                token = parseMinus();
+                parseMinus();
                 break;
             case '(':
-                token = getNewToken(Token::LeftParen);
+                parseLeftParen();
                 break;
             case ')':
-                token = getNewToken(Token::RightParen);
+                parseRightParen();
                 break;
             case ';':
-                token = getNewToken(Token::Semicolon);
+                parseSemicolon();
                 break;
             case '+':
-                token = getNewToken(Token::Plus);
+                parsePlus();
                 break;
             case '*':
-                token = getNewToken(Token::Star);
+                parseStar();
                 break;
             case '%':
-                token = getNewToken(Token::Reminder);
-                break;
-            case '=':
-                token = parseEquals();
+                parseReminder();
                 break;
             case ',':
-                token = getNewToken(Token::Comma);
+                parseComma();
                 break;
             case '&':
-                token = getNewToken(Token::BitAnd);
+                parseBitAnd();
                 break;
             case '~':
-                token = getNewToken(Token::BitNot);
+                parseBitNot();
+                break;
+            case '=':
+                parseEquals();
                 break;
             case '/':
-                token = parseSlash();
+                parseSlash();
                 break;
             case '!':
-                token = parseNotEqual();
+                parseNotEqual();
                 break;
             case '|':
-                token = parsePipe();
+                parsePipe();
+                break;
+            case '\'':
+                parseString();
                 break;
             case '\0':
-                token = getNewToken(Token::EndOfLine);
+                parseEndOfLine();
                 break;
             default:
-                if(isIdentifierChar(queryText[index]))
-                    token = parseIdentifier();
+                if(isIdentifierChar(getChar()))
+                    parseIdentifier();
                 else
-                    token = getNewToken(Token::Illegal);
+                    setNewCurrentToken(Token::Illegal);
                 break;
         }
 
-    if(token != nullptr)
-    {
-        index += token->length;
-        currentTokenType = token->type;
-    }
-    return token;
+    if(currentToken == nullptr)
+        throw common::Exception("Token can not be null");
+
+    index += currentToken->length;
+    currentTokenType = currentToken->type;
+    return currentToken;
 }
 
-Token *SqlParser::getSpaceToken()
+void SqlParser::parseSpaces()
 {
     int currentIndex = index + 1;
-    while(isSpace(queryText[currentIndex]))
-        currentIndex++;
-    return getNewToken(Token::Space, currentIndex - index);
+    while(isSpace(queryText[currentIndex].unicode()))
+        currentIndex ++;
+    setNewCurrentToken(Token::Space, currentIndex - index);
 }
 
-Token *SqlParser::getSingleLineCommentToken()
+void SqlParser::parseSingleLineComment()
 {
     int currentIndex = index + 2;
-    while(isSingleLineCommentEnd(queryText[currentIndex]) == false)
-        currentIndex++;
-    return getNewToken(Token::SingleLineComment, currentIndex - index);
+    while(isSingleLineCommentEnd(queryText[currentIndex].unicode()) == false)
+        currentIndex ++;
+    setNewCurrentToken(Token::SingleLineComment, currentIndex - index);
 }
 
-Token *SqlParser::getMultiLineCommentToken()
+void SqlParser::parseMultiLineComment()
 {
     int currentIndex = index;
     while(queryText[currentIndex] != '\0' && (queryText[currentIndex] != '*' || queryText[currentIndex + 1] != '/'))
         currentIndex ++;
     if(queryText[currentIndex] == '\0')
-        return getNewToken(Token::MultiLineComment, currentIndex - index + 1);
+        setNewCurrentToken(Token::MultiLineComment, currentIndex - index + 1);
     else
-        return getNewToken(Token::MultiLineCommentEnd, currentIndex - index + 2);
+        setNewCurrentToken(Token::MultiLineCommentEnd, currentIndex - index + 2);
 }
 
-Token *SqlParser::parseMinus()
+void SqlParser::parseMinus()
 {
     if(queryText[index + 1] == '-')
-        return getSingleLineCommentToken();
+        parseSingleLineComment();
     else
-        return getNewToken(Token::Minus);
+        setNewCurrentToken(Token::Minus);
 }
 
-Token *SqlParser::parseEquals()
+void SqlParser::parseEquals()
 {
     if(queryText[index + 1] == '=')
-        return getNewToken(Token::Equals, 2);
+        setNewCurrentToken(Token::Equals, 2);
     else
-        return getNewToken(Token::Equals);
+        setNewCurrentToken(Token::Equals);
 }
 
-Token *SqlParser::parseNotEqual()
+void SqlParser::parseNotEqual()
 {
     if(queryText[index + 1] == '=')
-        return getNewToken(Token::NotEqual, 2);
+        setNewCurrentToken(Token::NotEqual, 2);
     else
-        return getNewToken(Token::Illegal);
+        setNewCurrentToken(Token::Illegal);
 }
 
-Token *SqlParser::parseSlash()
+void SqlParser::parseSlash()
 {
     if(queryText[index + 1] == '*')
-        return getNewToken(Token::MultiLineCommentStart, 2);
+        setNewCurrentToken(Token::MultiLineCommentStart, 2);
     else
-        return getNewToken(Token::Slash);
+        setNewCurrentToken(Token::Slash);
 }
 
-Token *SqlParser::parsePipe()
+void SqlParser::parsePipe()
 {
     if(queryText[index + 1] == '|')
-        return getNewToken(Token::Concat, 2);
+        setNewCurrentToken(Token::Concat, 2);
     else
-        return getNewToken(Token::BitOr);
+        setNewCurrentToken(Token::BitOr);
 }
 
-Token *SqlParser::parseIdentifier()
+void SqlParser::parseIdentifier()
 {
 
     int currentIndex = index + 1;
-    while(isIdentifierChar(queryText[currentIndex]))
+    while(isIdentifierChar(queryText[currentIndex].unicode()))
         currentIndex ++;
     QString identifier = queryText.mid(index, currentIndex - index).toUpper();
     if(isMainKeyword(identifier))
-        return getNewToken(Token::MainKeyword, currentIndex - index);
+        setNewCurrentToken(Token::MainKeyword, currentIndex - index);
     else if(isKeyword(identifier))
-        return getNewToken(Token::Keyword, currentIndex - index);
+        setNewCurrentToken(Token::Keyword, currentIndex - index);
     else
-        return getNewToken(Token::Identifier, currentIndex - index);
+        setNewCurrentToken(Token::Identifier, currentIndex - index);
 }
+
+void SqlParser::parseString()
+{
+    int currentIndex = 1;
+    while(getChar(currentIndex) != L'\'' && getChar(currentIndex) != '\0')
+        currentIndex ++;
+    setNewCurrentToken(Token::String, currentIndex + 1);
+}
+
+
+/*//            case '`': case '\'': case '"': {
+//      int delim = z[0];
+//      for(i=1; (c=z[i])!=0; i++){
+//        if( c==delim ){
+//          if( z[i+1]==delim ){
+//            i++;
+//          }else{
+//            break;
+//          }
+//        }
+//      }
+//      if( c=='\'' ){
+//        *tokenType = TK_STRING;
+//        return i+1;
+//      }else if( c!=0 ){
+//        *tokenType = TK_ID;
+//        return i+1;
+//      }else{
+//        *tokenType = TK_ILLEGAL;
+//        return i;
+//      }
+//    }*/
+
 
 /*
 //

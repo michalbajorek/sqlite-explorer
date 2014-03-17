@@ -15,9 +15,9 @@ TEMPLATE = app
 LIBS += -ldl
 CONFIG += c++11
 
-CONFIG(release) {
+#CONFIG(release) {
 #    QMAKE_CXXFLAGS += -O3
-}
+#}
 
 SOURCES += \
     src/sqlite/sqlite3.c \

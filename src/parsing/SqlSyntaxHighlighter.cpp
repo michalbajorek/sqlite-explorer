@@ -76,6 +76,9 @@ void SqlSyntaxHighlighter::highlightBlock(const QString &text)
             case Token::Keyword:
                 setFormat(token->position, token->length, keywordFormat);
                 break;
+            case Token::String:
+                setFormat(token->position, token->length, stringFormat);
+                break;
         }
     }
 }

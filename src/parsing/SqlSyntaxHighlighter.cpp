@@ -14,13 +14,14 @@ SqlSyntaxHighlighter::SqlSyntaxHighlighter(QObject *parent) :
 void SqlSyntaxHighlighter::setupFormats()
 {
     primaryKeywordFormat.setForeground(QColor(Qt::blue));
-    secondaryKeywordFormat.setForeground(QColor(Qt::darkBlue));
+    secondaryKeywordFormat.setForeground(QColor(Qt::darkCyan));
     stringFormat.setForeground(QColor(Qt::darkRed));
     operatorFormat.setForeground(QColor(Qt::darkGray));
     numberFormat.setForeground(QColor(Qt::magenta));
     commentFormat.setForeground(QColor(Qt::lightGray));
     illegalFormat.setBackground(QColor(Qt::red));
     illegalFormat.setForeground(QColor(Qt::white));
+    variableFormat.setForeground(QColor(Qt::darkMagenta));
 }
 
 void SqlSyntaxHighlighter::highlightBlock(const QString &text)
@@ -68,10 +69,16 @@ void SqlSyntaxHighlighter::setTokenFormats()
             case TokenType::BitNot:
             case TokenType::BitOr:
             case TokenType::Concat:
+            case TokenType::LeftShift:
+            case TokenType::RightShift:
+            case TokenType::LessThan:
+            case TokenType::GreaterThan:
+            case TokenType::LessOrEqual:
+            case TokenType::GreaterEqual:
                 setFormat(token->position, token->length, operatorFormat);
                 break;
             case TokenType::Illegal:
-                //setFormat(token->position, token->length, illegalFormat);
+                setFormat(token->position, token->length, illegalFormat);
                 break;
             case TokenType::PrimaryKeyword:
                 setFormat(token->position, token->length, primaryKeywordFormat);
@@ -81,6 +88,13 @@ void SqlSyntaxHighlighter::setTokenFormats()
                 break;
             case TokenType::String:
                 setFormat(token->position, token->length, stringFormat);
+                break;
+            case TokenType::Integer:
+            case TokenType::Float:
+                setFormat(token->position, token->length, numberFormat);
+                break;
+            case TokenType::Variable:
+                setFormat(token->position, token->length, variableFormat);
                 break;
         }
     }

@@ -19,7 +19,10 @@ public:
         { return secondaryKeywordSet.contains(identifier); }
 
     static bool isIdentifierChar(char ch)
-        { return charType[static_cast<unsigned char>(ch)] & 0x46; }
+        { return charType[static_cast<unsigned char>(ch)] & 0x46; } // from sqlite3.c
+
+    static bool isDigitChar(char ch)
+        { return charType[static_cast<unsigned char>(ch)] & 0x04; } // from sqlite3.c
 
 private:
     void createKeywordSets();

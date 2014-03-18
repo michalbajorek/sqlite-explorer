@@ -134,6 +134,7 @@ const char *Keywords::secondaryKeywords[Keywords::SecondaryKeywordsCount] =
     "WITHOUT",
 };
 
+// Character table copied from sqlite3.c
 const unsigned char Keywords::charType[256] =
 {
   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,  // 00..07    ........

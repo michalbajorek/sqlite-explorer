@@ -33,6 +33,16 @@ enum class TokenType
     PrimaryKeyword,
     SecondaryKeyword,
     String,
+    LessOrEqual,
+    LeftShift,
+    LessThan,
+    GreaterEqual,
+    RightShift,
+    GreaterThan,
+    Dot,
+    Integer,
+    Float,
+    Variable,
 };
 
 class Token

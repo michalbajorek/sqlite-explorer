@@ -24,6 +24,7 @@ void SqlParser::initParser()
 
 void SqlParser::setTextAndLastTokenType(const QString &newText, TokenType tokenType)
 {
+    qDebug() << "Sql: " << newText;
     initParser();
     text = newText;
     setLastTokenType(tokenType);
@@ -71,55 +72,73 @@ void SqlParser::parseToken()
     {
         switch(getChar())
         {
-            case ' ': case '\t': case '\n': case '\f': case '\r':
+            case L' ': case L'\t': case L'\n': case L'\f': case L'\r':
                 parseSpaces();
                 break;
-            case '-':
+            case L'-':
                 parseMinus();
                 break;
-            case '(':
+            case L'(':
                 parseLeftParen();
                 break;
-            case ')':
+            case L')':
                 parseRightParen();
                 break;
-            case ';':
+            case L';':
                 parseSemicolon();
                 break;
-            case '+':
+            case L'+':
                 parsePlus();
                 break;
-            case '*':
+            case L'*':
                 parseStar();
                 break;
-            case '%':
+            case L'%':
                 parseReminder();
                 break;
-            case ',':
+            case L',':
                 parseComma();
                 break;
-            case '&':
+            case L'&':
                 parseBitAnd();
                 break;
-            case '~':
+            case L'~':
                 parseBitNot();
                 break;
-            case '=':
+            case L'=':
                 parseEquals();
                 break;
-            case '/':
+            case L'/':
                 parseSlash();
                 break;
-            case '!':
+            case L'!':
                 parseNotEqual();
                 break;
-            case '|':
+            case L'|':
                 parsePipe();
                 break;
-            case '\'':
+            case L'<':
+                parseLessThan();
+                break;
+            case L'>':
+                parseGraterThan();
+                break;
+            case L'\'':
                 parseString();
                 break;
-            case '\0':
+            case L'.':
+                parseDot();
+                break;
+            case L'0': case L'1': case L'2': case L'3': case L'4': case L'5': case L'6': case L'7': case L'8': case L'9':
+                parseNumber();
+                break;
+            case L'[':
+                parseSquareBrackets();
+                break;
+            case L'?':
+                parseQuestionMark();
+                break;
+            case L'\0':
                 parseEndOfLine();
                 break;
             default:
@@ -161,7 +180,7 @@ void SqlParser::parseMultiLineComment()
 
 void SqlParser::parseMinus()
 {
-    if(text[index + 1] == '-')
+    if(getChar(1) == '-')
         parseSingleLineComment();
     else
         setNewCurrentToken(TokenType::Minus);
@@ -169,7 +188,7 @@ void SqlParser::parseMinus()
 
 void SqlParser::parseEquals()
 {
-    if(text[index + 1] == '=')
+    if(getChar(1) == '=')
         setNewCurrentToken(TokenType::Equals, 2);
     else
         setNewCurrentToken(TokenType::Equals);
@@ -177,7 +196,7 @@ void SqlParser::parseEquals()
 
 void SqlParser::parseNotEqual()
 {
-    if(text[index + 1] == '=')
+    if(getChar(1) == '=')
         setNewCurrentToken(TokenType::NotEqual, 2);
     else
         setNewCurrentToken(TokenType::Illegal);
@@ -185,7 +204,7 @@ void SqlParser::parseNotEqual()
 
 void SqlParser::parseSlash()
 {
-    if(text[index + 1] == '*')
+    if(getChar(1) == '*')
         setNewCurrentToken(TokenType::MultiLineCommentStart, 2);
     else
         setNewCurrentToken(TokenType::Slash);
@@ -193,7 +212,7 @@ void SqlParser::parseSlash()
 
 void SqlParser::parsePipe()
 {
-    if(text[index + 1] == '|')
+    if(getChar(1) == '|')
         setNewCurrentToken(TokenType::Concat, 2);
     else
         setNewCurrentToken(TokenType::BitOr);
@@ -201,7 +220,6 @@ void SqlParser::parsePipe()
 
 void SqlParser::parseIdentifier()
 {
-
     int currentIndex = index + 1;
     while(keywords.isIdentifierChar(text[currentIndex].unicode()))
         currentIndex ++;
@@ -217,9 +235,116 @@ void SqlParser::parseIdentifier()
 void SqlParser::parseString()
 {
     int currentIndex = 1;
-    while(getChar(currentIndex) != L'\'' && getChar(currentIndex) != '\0')
+    while(true)
+    {
+        if(getChar(currentIndex) == L'\0')
+            break;
+        if(getChar(currentIndex) == L'\'')
+        {
+            currentIndex ++;
+            if(getChar(currentIndex) != L'\'') // Double apostrophe does not divide string token
+                break;
+        }
         currentIndex ++;
-    setNewCurrentToken(TokenType::String, currentIndex + 1);
+    }
+    setNewCurrentToken(TokenType::String, currentIndex);
+}
+
+void SqlParser::parseLessThan()
+{
+    wchar_t character = getChar(1);
+    if(character == L'=')
+        setNewCurrentToken(TokenType::LessOrEqual, 2);
+    else if(character == L'>')
+        setNewCurrentToken(TokenType::NotEqual, 2);
+    else if(character == L'<')
+        setNewCurrentToken(TokenType::LeftShift, 2);
+    else
+        setNewCurrentToken(TokenType::LessThan);
+}
+
+void SqlParser::parseGraterThan()
+{
+    wchar_t character = getChar(1);
+    if(character == L'=')
+        setNewCurrentToken(TokenType::GreaterEqual, 2);
+    else if(character == L'>')
+        setNewCurrentToken(TokenType::RightShift, 2);
+    else
+        setNewCurrentToken(TokenType::GreaterThan);
+}
+
+void SqlParser::parseDot()
+{
+    if(keywords.isDigitChar(getChar(1)))
+        parseNumber();
+    else
+        setNewCurrentToken(TokenType::Dot);
+}
+
+void SqlParser::parseNumber()
+{
+    TokenType tokenType = TokenType::Integer;
+    int currentIndex = 1;
+    skipDigits(currentIndex);
+    // Check floating point
+    if(getChar(currentIndex) == L'.')
+    {
+        currentIndex ++;
+        skipDigits(currentIndex);
+        tokenType = TokenType::Float;
+    }
+    // Check scientific notation
+    wchar_t character = getChar(currentIndex);
+    if(character == L'e' || character == L'E')
+    {
+        currentIndex ++;
+        character = getChar(currentIndex);
+        if(keywords.isDigitChar(character) || character == L'+' || character == L'-')
+            {
+            currentIndex ++;
+            if(keywords.isDigitChar(getChar(currentIndex)))
+                skipDigits(currentIndex);
+            }
+    }
+    while(keywords.isIdentifierChar(getChar(currentIndex)))
+    {
+        tokenType = TokenType::Illegal;
+        currentIndex ++;
+    }
+    setNewCurrentToken(tokenType, currentIndex);
+}
+
+void SqlParser::skipDigits(int &currentIndex)
+{
+    while(keywords.isDigitChar(getChar(currentIndex)))
+        currentIndex ++;
+}
+
+void SqlParser::parseSquareBrackets()
+{
+    TokenType tokenType = TokenType::Illegal;
+    int currentIndex = 1;
+    while(true)
+    {
+        wchar_t character = getChar(currentIndex++);
+        if(character == L'\0')
+            break;
+        if(character == L']')
+        {
+            tokenType = TokenType::Identifier;
+            break;
+        }
+    }
+    setNewCurrentToken(tokenType, currentIndex);
+}
+
+void SqlParser::parseQuestionMark()
+{
+    int currentIndex = 1;
+    while(keywords.isDigitChar(getChar(currentIndex)))
+        currentIndex ++;
+    setNewCurrentToken(TokenType::Variable, currentIndex);
 }
 
 
@@ -256,35 +381,6 @@ int sqlite3GetToken(const unsigned char *z, int *tokenType){
   int i, c;
   switch( *z ){
 
-
-    case '<': {
-      if( (c=z[1])=='=' ){
-        *tokenType = TK_LE;
-        return 2;
-      }else if( c=='>' ){
-        *tokenType = TK_NE;
-        return 2;
-      }else if( c=='<' ){
-        *tokenType = TK_LSHIFT;
-        return 2;
-      }else{
-        *tokenType = TK_LT;
-        return 1;
-      }
-    }
-    case '>': {
-      if( (c=z[1])=='=' ){
-        *tokenType = TK_GE;
-        return 2;
-      }else if( c=='>' ){
-        *tokenType = TK_RSHIFT;
-        return 2;
-      }else{
-        *tokenType = TK_GT;
-        return 1;
-      }
-    }
-
     case '`':
     case '\'':
     case '"': {
@@ -312,60 +408,7 @@ int sqlite3GetToken(const unsigned char *z, int *tokenType){
         return i;
       }
     }
-    case '.': {
-#ifndef SQLITE_OMIT_FLOATING_POINT
-      if( !sqlite3Isdigit(z[1]) )
-#endif
-      {
-        *tokenType = TK_DOT;
-        return 1;
-      }
-      // If the next character is a digit, this is a floating point
-      // number that begins with ".".  Fall thru into the next case
-    }
-    case '0': case '1': case '2': case '3': case '4':
-    case '5': case '6': case '7': case '8': case '9': {
-      testcase( z[0]=='0' );  testcase( z[0]=='1' );  testcase( z[0]=='2' );
-      testcase( z[0]=='3' );  testcase( z[0]=='4' );  testcase( z[0]=='5' );
-      testcase( z[0]=='6' );  testcase( z[0]=='7' );  testcase( z[0]=='8' );
-      testcase( z[0]=='9' );
-      *tokenType = TK_INTEGER;
-      for(i=0; sqlite3Isdigit(z[i]); i++){}
-#ifndef SQLITE_OMIT_FLOATING_POINT
-      if( z[i]=='.' ){
-        i++;
-        while( sqlite3Isdigit(z[i]) ){ i++; }
-        *tokenType = TK_FLOAT;
-      }
-      if( (z[i]=='e' || z[i]=='E') &&
-           ( sqlite3Isdigit(z[i+1])
-            || ((z[i+1]=='+' || z[i+1]=='-') && sqlite3Isdigit(z[i+2]))
-           )
-      ){
-        i += 2;
-        while( sqlite3Isdigit(z[i]) ){ i++; }
-        *tokenType = TK_FLOAT;
-      }
-#endif
-      while( IdChar(z[i]) ){
-        *tokenType = TK_ILLEGAL;
-        i++;
-      }
-      return i;
-    }
-    case '[': {
-      for(i=1, c=z[0]; c!=']' && (c=z[i])!=0; i++){}
-      *tokenType = c==']' ? TK_ID : TK_ILLEGAL;
-      return i;
-    }
-    case '?': {
-      *tokenType = TK_VARIABLE;
-      for(i=1; sqlite3Isdigit(z[i]); i++){}
-      return i;
-    }
-#ifndef SQLITE_OMIT_TCL_VARIABLE
     case '$':
-#endif
     case '@':  //For compatibility with MS SQL Server
     case '#':
     case ':': {
@@ -376,7 +419,6 @@ int sqlite3GetToken(const unsigned char *z, int *tokenType){
       for(i=1; (c=z[i])!=0; i++){
         if( IdChar(c) ){
           n++;
-#ifndef SQLITE_OMIT_TCL_VARIABLE
         }else if( c=='(' && n>0 ){
           do{
             i++;
@@ -389,7 +431,6 @@ int sqlite3GetToken(const unsigned char *z, int *tokenType){
           break;
         }else if( c==':' && z[i+1]==':' ){
           i++;
-#endif
         }else{
           break;
         }

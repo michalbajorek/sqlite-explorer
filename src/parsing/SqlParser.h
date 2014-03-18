@@ -1,6 +1,8 @@
 ﻿#ifndef SQLPARSER_H
 #define SQLPARSER_H
 
+#include <QDebug>
+
 #include <QList>
 #include <QSet>
 #include <QString>
@@ -45,7 +47,10 @@ private:
         { return ch == '\n' || ch == '\0'; }
 
     void setNewCurrentToken(TokenType type, int length = 1)
-        { currentToken = new Token(type, index, length); }
+    {
+        qDebug() << "Token: " << int(type) << " Index: " << index << " Length: " << length;
+        currentToken = new Token(type, index, length);
+    }
 
     wchar_t getChar(int offset = 0) const
         {
@@ -66,6 +71,12 @@ private:
     void parsePipe();
     void parseIdentifier();
     void parseString();
+    void parseLessThan();
+    void parseGraterThan();
+    void parseDot();
+    void parseNumber();
+    void parseSquareBrackets();
+    void parseQuestionMark();
 
     void parseLeftParen()
         { setNewCurrentToken(TokenType::LeftParen); }
@@ -96,6 +107,8 @@ private:
 
     void parseEndOfLine()
         { setNewCurrentToken(TokenType::EndOfLine); }
+
+    void skipDigits(int &currentIndex);
 
     QString text;
     int index;

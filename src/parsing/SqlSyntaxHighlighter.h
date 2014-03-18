@@ -30,6 +30,7 @@ private:
     QTextCharFormat numberFormat;
     QTextCharFormat commentFormat;
     QTextCharFormat illegalFormat;
+    QTextCharFormat variableFormat;
 };
 
 } // namespace parsing

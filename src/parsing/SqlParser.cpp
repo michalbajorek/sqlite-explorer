@@ -22,20 +22,20 @@ void SqlParser::initParser()
     lastTokenType = TokenType::None;
 }
 
-void SqlParser::setTextAndLastTokenType(const QString &newText, TokenType tokenType)
-{
-    qDebug() << "Sql: " << newText;
-    initParser();
-    text = newText;
-    setLastTokenType(tokenType);
-    createTokenList();
-}
-
 void SqlParser::clearTokenList()
 {
     foreach(Token *token, tokenList)
         delete token;
     tokenList.clear();
+}
+
+void SqlParser::setTextAndLastTokenType(const QString &newText, TokenType tokenType)
+{
+    //qDebug() << "Sql: " << newText;
+    initParser();
+    text = newText;
+    setLastTokenType(tokenType);
+    createTokenList();
 }
 
 void SqlParser::createTokenList()
@@ -141,41 +141,40 @@ void SqlParser::parseToken()
             case L'\0':
                 parseEndOfLine();
                 break;
+            case L'x': case L'X':
+                parseBlobOrIdentifier();
+                break;
             default:
-                if(keywords.isIdentifierChar(getChar()))
-                    parseIdentifier();
-                else
-                    setNewCurrentToken(TokenType::Illegal);
+                parseIdentifier();
                 break;
         }
     }
 }
 
+void SqlParser::parseMultiLineComment()
+{
+    int tokenLength = 0;
+    while(getChar(tokenLength) != L'\0' && (getChar(tokenLength) != L'*' || getChar(tokenLength + 1) != L'/'))
+        tokenLength ++;
+    if(getChar(tokenLength) == '\0')
+        setNewCurrentToken(TokenType::MultiLineComment, tokenLength);
+    else
+        setNewCurrentToken(TokenType::MultiLineCommentEnd, tokenLength + 2);
+}
+
 void SqlParser::parseSpaces()
 {
-    int currentIndex = index + 1;
-    while(isspace(text[currentIndex].unicode()))
-        currentIndex ++;
-    setNewCurrentToken(TokenType::Space, currentIndex - index);
+    int currentIndex = 1;
+    skipCharsThatMeetCriteria(currentIndex, Keywords::isSpaceChar);
+    setNewCurrentToken(TokenType::Space, currentIndex);
 }
 
 void SqlParser::parseSingleLineComment()
 {
-    int currentIndex = index + 2;
-    while(isSingleLineCommentEnd(text[currentIndex].unicode()) == false)
+    int currentIndex = 2;
+    while(isSingleLineCommentEnd(getChar(currentIndex)) == false)
         currentIndex ++;
-    setNewCurrentToken(TokenType::SingleLineComment, currentIndex - index);
-}
-
-void SqlParser::parseMultiLineComment()
-{
-    int currentIndex = index;
-    while(text[currentIndex] != '\0' && (text[currentIndex] != '*' || text[currentIndex + 1] != '/'))
-        currentIndex ++;
-    if(text[currentIndex] == '\0')
-        setNewCurrentToken(TokenType::MultiLineComment, currentIndex - index + 1);
-    else
-        setNewCurrentToken(TokenType::MultiLineCommentEnd, currentIndex - index + 2);
+    setNewCurrentToken(TokenType::SingleLineComment, currentIndex);
 }
 
 void SqlParser::parseMinus()
@@ -220,16 +219,20 @@ void SqlParser::parsePipe()
 
 void SqlParser::parseIdentifier()
 {
-    int currentIndex = index + 1;
-    while(keywords.isIdentifierChar(text[currentIndex].unicode()))
-        currentIndex ++;
-    QString identifier = text.mid(index, currentIndex - index).toUpper();
-    if(keywords.isPrimaryKeyword(identifier))
-        setNewCurrentToken(TokenType::PrimaryKeyword, currentIndex - index);
-    else if(keywords.isSecondaryKeyword(identifier))
-        setNewCurrentToken(TokenType::SecondaryKeyword, currentIndex - index);
+    int currentIndex = 0;
+    skipCharsThatMeetCriteria(currentIndex, Keywords::isIdentifierChar);
+    if(currentIndex == 0)
+        setNewCurrentToken(TokenType::Illegal);
     else
-        setNewCurrentToken(TokenType::Identifier, currentIndex - index);
+        {
+        QString identifier = text.mid(index, currentIndex).toUpper();
+        if(keywords.isPrimaryKeyword(identifier))
+            setNewCurrentToken(TokenType::PrimaryKeyword, currentIndex);
+        else if(keywords.isSecondaryKeyword(identifier))
+            setNewCurrentToken(TokenType::SecondaryKeyword, currentIndex);
+        else
+            setNewCurrentToken(TokenType::Identifier, currentIndex);
+        }
 }
 
 void SqlParser::parseString()
@@ -276,7 +279,7 @@ void SqlParser::parseGraterThan()
 
 void SqlParser::parseDot()
 {
-    if(keywords.isDigitChar(getChar(1)))
+    if(Keywords::isDigitChar(getChar(1)))
         parseNumber();
     else
         setNewCurrentToken(TokenType::Dot);
@@ -286,12 +289,12 @@ void SqlParser::parseNumber()
 {
     TokenType tokenType = TokenType::Integer;
     int currentIndex = 1;
-    skipDigits(currentIndex);
+    skipCharsThatMeetCriteria(currentIndex, Keywords::isDigitChar);
     // Check floating point
     if(getChar(currentIndex) == L'.')
     {
         currentIndex ++;
-        skipDigits(currentIndex);
+        skipCharsThatMeetCriteria(currentIndex, Keywords::isDigitChar);
         tokenType = TokenType::Float;
     }
     // Check scientific notation
@@ -300,14 +303,14 @@ void SqlParser::parseNumber()
     {
         currentIndex ++;
         character = getChar(currentIndex);
-        if(keywords.isDigitChar(character) || character == L'+' || character == L'-')
+        if(Keywords::isDigitChar(character) || character == L'+' || character == L'-')
             {
             currentIndex ++;
-            if(keywords.isDigitChar(getChar(currentIndex)))
-                skipDigits(currentIndex);
+            if(Keywords::isDigitChar(getChar(currentIndex)))
+                skipCharsThatMeetCriteria(currentIndex, Keywords::isDigitChar);
             }
     }
-    while(keywords.isIdentifierChar(getChar(currentIndex)))
+    while(Keywords::isIdentifierChar(getChar(currentIndex)))
     {
         tokenType = TokenType::Illegal;
         currentIndex ++;
@@ -315,9 +318,9 @@ void SqlParser::parseNumber()
     setNewCurrentToken(tokenType, currentIndex);
 }
 
-void SqlParser::skipDigits(int &currentIndex)
+void SqlParser::skipCharsThatMeetCriteria(int &currentIndex, CriteriaFunction function)
 {
-    while(keywords.isDigitChar(getChar(currentIndex)))
+    while(function(getChar(currentIndex)))
         currentIndex ++;
 }
 
@@ -342,34 +345,33 @@ void SqlParser::parseSquareBrackets()
 void SqlParser::parseQuestionMark()
 {
     int currentIndex = 1;
-    while(keywords.isDigitChar(getChar(currentIndex)))
-        currentIndex ++;
+    skipCharsThatMeetCriteria(currentIndex, Keywords::isDigitChar);
     setNewCurrentToken(TokenType::Variable, currentIndex);
 }
 
+void SqlParser::parseBlobOrIdentifier()
+{
+    if(getChar(1) == L'\'')
+        parseBlob();
+    else
+        parseIdentifier();
+}
 
-/*//            case '`': case '\'': case '"': {
-//      int delim = z[0];
-//      for(i=1; (c=z[i])!=0; i++){
-//        if( c==delim ){
-//          if( z[i+1]==delim ){
-//            i++;
-//          }else{
-//            break;
-//          }
-//        }
-//      }
-//      if( c=='\'' ){
-//        *tokenType = TK_STRING;
-//        return i+1;
-//      }else if( c!=0 ){
-//        *tokenType = TK_ID;
-//        return i+1;
-//      }else{
-//        *tokenType = TK_ILLEGAL;
-//        return i;
-//      }
-//    }*/
+void SqlParser::parseBlob()
+{
+    int currentIndex = 2;
+    skipCharsThatMeetCriteria(currentIndex, Keywords::isHexDigitChar);
+    if(getChar(currentIndex) == L'\'')
+    {
+        currentIndex ++;
+        if(currentIndex % 2 == 0)
+            setNewCurrentToken(TokenType::Illegal, currentIndex);
+        else
+            setNewCurrentToken(TokenType::Blob, currentIndex);
+    }
+    else
+        setNewCurrentToken(TokenType::Blob, currentIndex);
+}
 
 
 /*
@@ -438,22 +440,7 @@ int sqlite3GetToken(const unsigned char *z, int *tokenType){
       if( n==0 ) *tokenType = TK_ILLEGAL;
       return i;
     }
-#ifndef SQLITE_OMIT_BLOB_LITERAL
-    case 'x': case 'X': {
-      testcase( z[0]=='x' ); testcase( z[0]=='X' );
-      if( z[1]=='\'' ){
-        *tokenType = TK_BLOB;
-        for(i=2; sqlite3Isxdigit(z[i]); i++){}
-        if( z[i]!='\'' || i%2 ){
-          *tokenType = TK_ILLEGAL;
-          while( z[i] && z[i]!='\'' ){ i++; }
-        }
-        if( z[i] ) i++;
-        return i;
-      }
-      // Otherwise fall through to the next case
-    }
-#endif
+
     default: {
       if( !IdChar(*z) ){
         break;

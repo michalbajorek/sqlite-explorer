@@ -43,6 +43,7 @@ enum class TokenType
     Integer,
     Float,
     Variable,
+    Blob,
 };
 
 class Token

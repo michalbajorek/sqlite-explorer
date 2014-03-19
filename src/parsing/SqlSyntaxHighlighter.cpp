@@ -22,6 +22,7 @@ void SqlSyntaxHighlighter::setupFormats()
     illegalFormat.setBackground(QColor(Qt::red));
     illegalFormat.setForeground(QColor(Qt::white));
     variableFormat.setForeground(QColor(Qt::darkMagenta));
+    blobFormat.setForeground(QColor(Qt::darkYellow));
 }
 
 void SqlSyntaxHighlighter::highlightBlock(const QString &text)
@@ -75,6 +76,7 @@ void SqlSyntaxHighlighter::setTokenFormats()
             case TokenType::GreaterThan:
             case TokenType::LessOrEqual:
             case TokenType::GreaterEqual:
+            case TokenType::Dot:
                 setFormat(token->position, token->length, operatorFormat);
                 break;
             case TokenType::Illegal:
@@ -95,6 +97,9 @@ void SqlSyntaxHighlighter::setTokenFormats()
                 break;
             case TokenType::Variable:
                 setFormat(token->position, token->length, variableFormat);
+                break;
+            case TokenType::Blob:
+                setFormat(token->position, token->length, blobFormat);
                 break;
         }
     }

@@ -24,7 +24,6 @@ public:
 
     void setTextAndLastTokenType(const QString &newText, TokenType tokenType);
 
-
     TokenType getLastTokenType() const
         { return lastTokenType; }
 
@@ -48,7 +47,7 @@ private:
 
     void setNewCurrentToken(TokenType type, int length = 1)
     {
-        qDebug() << "Token: " << int(type) << " Index: " << index << " Length: " << length;
+        //qDebug() << "Token: " << int(type) << " Index: " << index << " Length: " << length;
         currentToken = new Token(type, index, length);
     }
 
@@ -77,6 +76,8 @@ private:
     void parseNumber();
     void parseSquareBrackets();
     void parseQuestionMark();
+    void parseBlobOrIdentifier();
+    void parseBlob();
 
     void parseLeftParen()
         { setNewCurrentToken(TokenType::LeftParen); }
@@ -108,7 +109,7 @@ private:
     void parseEndOfLine()
         { setNewCurrentToken(TokenType::EndOfLine); }
 
-    void skipDigits(int &currentIndex);
+    void skipCharsThatMeetCriteria(int &currentIndex, CriteriaFunction function);
 
     QString text;
     int index;

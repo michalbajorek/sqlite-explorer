@@ -7,22 +7,30 @@
 namespace parsing
 {
 
+typedef bool (*CriteriaFunction)(char characted);
+
 class Keywords
 {
 public:
     Keywords();
 
-    static bool isPrimaryKeyword(const QString &identifier)
+    bool isPrimaryKeyword(const QString &identifier)
         { return primaryKeywordSet.contains(identifier); }
 
-    static bool isSecondaryKeyword(const QString &identifier)
+    bool isSecondaryKeyword(const QString &identifier)
         { return secondaryKeywordSet.contains(identifier); }
 
-    static bool isIdentifierChar(char ch)
-        { return charType[static_cast<unsigned char>(ch)] & 0x46; } // from sqlite3.c
+    static bool isIdentifierChar(char character)
+        { return charType[static_cast<unsigned char>(character)] & 0x46; } // from sqlite3.c
 
-    static bool isDigitChar(char ch)
-        { return charType[static_cast<unsigned char>(ch)] & 0x04; } // from sqlite3.c
+    static bool isDigitChar(char character)
+        { return charType[static_cast<unsigned char>(character)] & 0x04; } // from sqlite3.c
+
+    static bool isHexDigitChar(char character)
+        { return charType[static_cast<unsigned char>(character)] & 0x08; } // from sqlite3.c
+
+    static bool isSpaceChar(char character)
+        { return charType[static_cast<unsigned char>(character)] & 0x01; } // from sqlite3.c
 
 private:
     void createKeywordSets();

@@ -31,6 +31,7 @@ private:
     QTextCharFormat commentFormat;
     QTextCharFormat illegalFormat;
     QTextCharFormat variableFormat;
+    QTextCharFormat blobFormat;
 };
 
 } // namespace parsing
